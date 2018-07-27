@@ -1,6 +1,6 @@
 import json
 import re
-import subprocess
+from subprocess import Popen, PIPE
 
 from json.decoder import JSONDecodeError
 
@@ -8,13 +8,14 @@ EXECUTABLE = "/usr/bin/exiftool"
 
 
 def main():
-    output = subprocess.check_output([EXECUTABLE, '-G', '-j', '-n', '/sample'])
+    process = Popen([EXECUTABLE, '-G', '-j', '-n', '/sample'], stdout=PIPE)
+    output = process.communicate()[0]
     output = output.decode('utf-8')
 
     try:
         json_data = json.loads(output, encoding='utf-8')[0]
     except JSONDecodeError:
-        print('{}')
+        print('{[]}')
         return
 
     result = []
