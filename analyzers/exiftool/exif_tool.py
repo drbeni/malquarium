@@ -17,7 +17,7 @@ def main():
         print('{}')
         return
 
-    result = {}
+    result = []
     for key in json_data:
         if not (key in ('SourceFile', 'ExifTool:ExifToolVersion') or key.startswith("File:")):
             # special treatment for things like
@@ -28,9 +28,15 @@ def main():
 
             if type(json_data[key]) == str and '\u0000' in json_data[key]:
                 alpha_numeric_dash = re.compile(r'[^0-9a-zA-Z-]+')
-                result[key] = alpha_numeric_dash.sub('', ''.join([s for s in json_data[key] if s != '\x00']))
+                result.append({
+                    "key": key,
+                    "value": alpha_numeric_dash.sub('', ''.join([s for s in json_data[key] if s != '\x00']))
+                })
             else:
-                result[key] = json_data[key]
+                result.append({
+                    "key": key,
+                    "value": json_data[key]
+                })
 
     print(json.dumps(result))
 
