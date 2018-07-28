@@ -1,7 +1,6 @@
 version: "2"
 services:
   malquarium-frontend:
-    build: frontend
     image: malquarium/frontend:latest
     expose:
     - "80"
@@ -11,7 +10,6 @@ services:
     - malquarium-backend
 
   malquarium-backend:
-    build: backend
     image: malquarium/backend:latest
     ports:
     - "8000:8000"
