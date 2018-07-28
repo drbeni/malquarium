@@ -28,5 +28,15 @@
       "docker_image_name": "malquarium/pefile",
       "enabled": true
     }
+  },
+  {
+    "model": "backend.analyzer",
+    "pk": 4,
+    "fields": {
+      "identifier": "oletools",
+      "name": "OLE Information",
+      "docker_image_name": "malquarium/oletools",
+      "enabled": true
+    }
   }
 ]
