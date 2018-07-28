@@ -21,7 +21,7 @@ services:
     - /var/run/docker.sock:/run/docker.sock
     environment:
       DJANGO_SECRET_KEY: "your-super-duper-django-secret-key"
-      DJANGO_DEBUG: "true"
+      DJANGO_DEBUG: "false"
       
       DB_NAME: malquarium
       DB_USER: malquarium
