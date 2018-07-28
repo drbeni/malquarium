@@ -163,7 +163,6 @@ def get_macros():
 
         for (filename, stream_path, vba_filename, vba_code) in vbaparser.extract_macros():
             extracted_macros.append({
-                "filename": filename,
                 "stream_path": stream_path,
                 "vba_filename": vba_filename,
                 "vba_code": vba_code
