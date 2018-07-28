@@ -1,0 +1,165 @@
+#root {
+}
+
+.content {
+    max-width: 1280px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding-top: 5rem;
+    padding-bottom: 6rem;
+}
+
+#footer {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    text-align: center;
+}
+
+@media only screen
+and (max-device-width: 480px) {
+    #footer {
+        position: relative;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        text-align: center;
+    }
+}
+
+.main-view {
+    border: 1px solid #ddd;
+    padding: 0 15px 15px;
+    margin-top: 5px;
+}
+
+form a {
+    margin-left: 5px;
+}
+
+.label {
+    margin: 0 5px;
+}
+
+.logo {
+    display: block;
+    text-indent: 40px;
+    height: 50px;
+    background: url(../images/virus.exchange_200.png) no-repeat;
+    background-size: auto 40px;
+    background-position: 15px 5px;
+}
+
+.logo-login {
+    text-indent: 100px;
+    max-width: 550px;
+    margin: 0 auto;
+    padding-top: 25px;
+    height: 100px;
+    background-size: 100px 100px;
+}
+
+.search-bar {
+    margin: 20px;
+    text-align: center;
+}
+
+.sample-list {
+    border: 1px solid #ccc;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+}
+
+.sample-family {
+    margin-left: 50px;
+}
+
+.login-page {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-page > div > form > h1 {
+    /*margin: 50px auto;*/
+    /*text-align: center;*/
+}
+
+.pe-import-details {
+    font-size: 1em;
+}
+
+.loading-spinner {
+    margin: 0 auto;
+    width: 10em;
+}
+
+.sample-upload-form {
+    border: 1px solid #ddd;
+    padding: 0 15px 15px;
+    margin-top: 5px;
+}
+
+.block-label {
+    float: left;
+    display: block;
+    padding: .4em .6em .3em;
+    margin: 0 5px 4px;
+}
+
+.block-label-default {
+    background-color: #777;
+}
+
+a {
+    color: #7aa228;
+    text-decoration: none;
+}
+
+a:focus, a:hover {
+    color: #2f3e0f;
+    text-decoration: underline
+}
+
+.btn-primary {
+    background-color: #7aa228;
+    border-color: #7aa228;
+}
+
+.btn-primary:hover {
+    background-color: #5e7b1e;
+    border-color: #5e7b1e;
+}
+
+.btn-primary.disabled:hover,
+.btn-primary[disabled]:hover,
+fieldset[disabled] .btn-primary:hover,
+.btn-primary.disabled:focus,
+.btn-primary[disabled]:focus,
+fieldset[disabled] .btn-primary:focus,
+.btn-primary.disabled.focus,
+.btn-primary[disabled].focus,
+fieldset[disabled] .btn-primary.focus {
+    background-color: #5e7b1e;
+    border-color: #5e7b1e;
+}
+
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover,
+.pagination > .active > span:hover,
+.pagination > .active > a:focus,
+.pagination > .active > span:focus {
+    z-index: 3;
+    color: #fff;
+    cursor: default;
+    background-color: #7aa228;
+    border-color: #7aa228;
+}
+
+.navbar-inverse {
+    border-radius: 0;
+    margin-bottom: 0;
+}
