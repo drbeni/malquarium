@@ -1,0 +1,42 @@
+version: "2"
+services:
+  malquarium-frontend:
+    build: frontend
+    image: malquarium/frontend:latest
+    expose:
+    - "80"
+    ports:
+    - "8080:80"
+    depends_on:
+    - malquarium-backend
+
+  malquarium-backend:
+    build: backend
+    image: malquarium/backend:latest
+    ports:
+    - "8000:8000"
+    volumes:
+    - /data/malquarium/samples:/data/samples
+    - /usr/bin/docker:/bin/docker
+    - /var/run/docker.sock:/run/docker.sock
+    environment:
+      DJANGO_SECRET_KEY: "your-super-duper-django-secret-key"
+      DJANGO_DEBUG: "true"
+      
+      DB_NAME: malquarium
+      DB_USER: malquarium
+      DB_PASSWORD: your-super-duper-postgres-password
+      DB_SERVER: db
+      DB_PORT: 5432
+
+      CONSOLE_LOG_LEVEL: INFO
+      DJANGO_LOG_LEVEL: INFO
+
+      FRONTEND_URL: "https://your.frontend.server"
+      
+      SAMPLE_STORE: "/data/samples"
+      OUTER_SAMPLE_STORE: "/data/malquarium/samples"
+      MAX_SAMPLE_SIZE: 20000000
+
+      ADMIN_USER: malquarium
+      ADMIN_PASSWORD: changeme
