@@ -1,0 +1,36 @@
+[
+  {
+    "model": "backend.serviceplan",
+    "pk": 1,
+    "fields": {
+      "name": "Basic",
+      "download_quota": 1000,
+      "upload_quota": 1000,
+      "capabilities": null
+    }
+  },
+  {
+    "model": "backend.serviceplan",
+    "pk": 2,
+    "fields": {
+      "name": "Advanced",
+      "download_quota": 10000,
+      "upload_quota": 10000,
+      "capabilities": {
+        "private_samples": 1
+      }
+    }
+  },
+  {
+    "model": "backend.serviceplan",
+    "pk": 3,
+    "fields": {
+      "name": "Unlimited",
+      "download_quota": 1000000000,
+      "upload_quota": 1000000000,
+      "capabilities": {
+        "private_samples": 1
+      }
+    }
+  }
+]

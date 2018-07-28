@@ -1,0 +1,32 @@
+[
+  {
+    "model": "backend.analyzer",
+    "pk": 1,
+    "fields": {
+      "identifier": "exiftool",
+      "name": "ExifTool File Metadata",
+      "docker_image_name": "malquarium/exiftool",
+      "enabled": true
+    }
+  },
+  {
+    "model": "backend.analyzer",
+    "pk": 2,
+    "fields": {
+      "identifier": "trid",
+      "name": "TRiD",
+      "docker_image_name": "malquarium/trid",
+      "enabled": true
+    }
+  },
+  {
+    "model": "backend.analyzer",
+    "pk": 3,
+    "fields": {
+      "identifier": "pefile",
+      "name": "PE Information",
+      "docker_image_name": "malquarium/pefile",
+      "enabled": true
+    }
+  }
+]

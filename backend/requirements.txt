@@ -1,0 +1,14 @@
+coreapi
+Django
+django-cors-headers
+djangorestframework
+djangorestframework-simplejwt
+docker
+feedparser
+psycopg2-binary
+pyminizip
+python-magic
+pytz
+requests
+ssdeep
+yara-python
