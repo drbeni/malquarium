@@ -254,7 +254,6 @@ class ServicePlan(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     service_plan = models.ForeignKey(ServicePlan, on_delete=models.PROTECT)
-    email_confirmed = models.BooleanField(default=False)
 
     def __str__(self):
         return "{}: {}".format(self.user, self.service_plan)
