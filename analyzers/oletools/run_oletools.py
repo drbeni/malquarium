@@ -86,9 +86,13 @@ def get_rtf_objects():
         rtfp.parse()
 
         out_data = []
+        tags = []
+        cve_regex = re.compile(' CVE-(\d{4}-\d+)')
 
         for rtfobj in rtfp.objects:
             if rtfobj.is_ole:
+                tags.append('ole')
+
                 ole_column = {'format_id': rtfobj.format_id}
                 if rtfobj.format_id == oleobj.OleObject.TYPE_EMBEDDED:
                     ole_column['format_type'] = 'embedded'
@@ -117,21 +121,25 @@ def get_rtf_objects():
                     ole_column['CLSID'] = rtfobj.clsid
                     ole_column['CLSID_desc'] = rtfobj.clsid_desc
 
+                    for match in cve_regex.findall(rtfobj.clsid_desc.upper()):
+                        tags.append('cve-{}'.format(match))
+
                 # Detect OLE2Link exploit
                 # http://www.kb.cert.org/vuls/id/921560
                 if rtfobj.class_name == b'OLE2Link':
                     ole_column[
-                        'exploits'] + 'Possibly an exploit for the OLE2Link vulnerability (VU#921560, CVE-2017-0199)'
+                        'exploits'] = 'Possibly an exploit for the OLE2Link vulnerability (VU#921560, CVE-2017-0199)'
+                    tags.append('cve-2017-0199')
             else:
                 ole_column = {'error': 'Not a well-formed OLE object'}
 
             out_data.append({
-                "id": rtfp.objects.index(rtfobj),
-                "index": rtfobj.start,
+                'id': rtfp.objects.index(rtfobj),
+                'index': rtfobj.start,
                 'ole_object': ole_column
             })
 
-        return out_data
+        return out_data, tags
 
 
 def get_metadata(ole):
@@ -197,22 +205,26 @@ def get_macros():
 
 
 def main():
+    rtf_objects, tags = get_rtf_objects()
+
     try:
         ole = olefile.OleFileIO('/sample')
 
         result = {
             "directory_entries": get_directory_entries(ole),
             "metadata": get_metadata(ole),
-            "rtf_objects": get_rtf_objects(),
-            "macros": get_macros()
+            "rtf_objects": rtf_objects,
+            "macros": get_macros(),
+            "tags": tags
         }
 
 
     except IOError:
         # Not a OLE file
         result = {
-            "rtf_objects": get_rtf_objects(),
-            "macros": get_macros()
+            "rtf_objects": rtf_objects,
+            "macros": get_macros(),
+            "tags": tags
         }
 
     for key in result:
