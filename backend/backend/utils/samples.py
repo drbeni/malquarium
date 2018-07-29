@@ -111,6 +111,10 @@ def create(sample_binary, user, private, original_filename, log=True):
                     result_data=analyzer_result_data
                 )
 
+                if 'tags' in analyzer_result_data:
+                    for t in analyzer_result_data['tags']:
+                        add_tag(sample, t, user, log)
+
         for t in yara_scanner.scan(sample_store.get_sample_path(file_info.sha2)):
             add_tag(sample, t, user, log)
 
