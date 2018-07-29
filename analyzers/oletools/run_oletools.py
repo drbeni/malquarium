@@ -145,6 +145,7 @@ def get_rtf_objects():
 def get_metadata(ole):
     out_data = {'SummaryInformation': {}, 'DocumentSummaryInformation': {}}
     metadata = ole.get_metadata()
+    tags = []
 
     for prop in metadata.SUMMARY_ATTRIBS:
         try:
@@ -158,12 +159,16 @@ def get_metadata(ole):
         except:
             out_data['DocumentSummaryInformation'][prop] = repr(getattr(metadata, prop))
 
-    return out_data
+    if out_data['SummaryInformation']['creating_application'] == 'Microsoft Office Word':
+        tags.append('doc')
+
+    return out_data, tags
 
 
 def get_macros():
     extracted_macros = []
     macro_analysis = []
+    tags = []
 
     try:
         vbaparser = VBA_Parser('/sample')
@@ -183,6 +188,9 @@ def get_macros():
                 "description": description
             })
 
+            if keyword == 'Shell':
+                tags.append('run-file')
+
         macro_suspicious_categories = {
             "nb_macros": vbaparser.nb_macros,
             "nb_autoexec": vbaparser.nb_autoexec,
@@ -194,28 +202,38 @@ def get_macros():
             "nb_vbastrings": vbaparser.nb_vbastrings,
         }
 
+        if vbaparser.nb_macros:
+            tags.append('macros')
+
+        if vbaparser.nb_hexstrings or vbaparser.nb_base64strings:
+            tags.append('obfuscated')
+
     except FileOpenError:
-        return None
+        return None, tags
 
     return {
-        "extracted_macros": extracted_macros,
-        "macro_analysis": macro_analysis,
-        "macro_suspicious_categories": macro_suspicious_categories
-    }
+               "extracted_macros": extracted_macros,
+               "macro_analysis": macro_analysis,
+               "macro_suspicious_categories": macro_suspicious_categories
+           }, tags
 
 
 def main():
     rtf_objects, tags = get_rtf_objects()
+    macros, new_tags = get_macros()
+    tags += new_tags
 
     try:
         ole = olefile.OleFileIO('/sample')
+        metadata, new_tags = get_metadata(ole)
+        tags += new_tags
 
         result = {
             "directory_entries": get_directory_entries(ole),
-            "metadata": get_metadata(ole),
+            "metadata": metadata,
             "rtf_objects": rtf_objects,
-            "macros": get_macros(),
-            "tags": tags
+            "macros": macros,
+            "tags": tags,
         }
 
 
@@ -223,7 +241,7 @@ def main():
         # Not a OLE file
         result = {
             "rtf_objects": rtf_objects,
-            "macros": get_macros(),
+            "macros": macros,
             "tags": tags
         }
 
