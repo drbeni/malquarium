@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Glyphicon} from 'react-bootstrap';
 
-export default class PEImport extends Component {
+export default class MacroCodeStream extends Component {
   constructor(props) {
     super(props);
 
@@ -15,25 +15,18 @@ export default class PEImport extends Component {
     this.setState({details_visible: !this.state.details_visible});
   }
 
-  renderImportFunction(functionItem) {
-    return (
-      <li key={functionItem.Address}>{functionItem.Name}</li>
-    )
-  }
 
   render() {
-    const dll = this.props.dll;
+    const macro = this.props.macro;
     return (
       <div>
         <a href="" onClick={this.toggleState}>
           {this.state.details_visible ? <Glyphicon glyph="minus"/> : <Glyphicon glyph="plus"/>}
         </a>&nbsp;
-        <span>{dll.Name}</span>
+        <span>{macro.vba_filename}</span>
         {this.state.details_visible ?
-          <div className="pe-import-details">
-            <ul>
-              {dll.Imports.map(this.renderImportFunction)}
-            </ul>
+          <div className="macro-code-details">
+            {macro.vba_code}
           </div>
           : ''
         }

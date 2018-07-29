@@ -7,6 +7,9 @@ import ReactTags from 'react-tag-autocomplete';
 import fileDownload from '../modules/file-download';
 import {addTag, downloadSample, fetchAllTags, fetchSample, removeTag} from "../actions";
 import PEImport from '../components/pe_import';
+import MacroCodeStream from '../components/macro_code_stream';
+import OleDirectoryEntry from '../components/ole_directory_entry';
+import RtfObject from '../components/rtf_object';
 import {isAuthenticated, username} from '../reducers'
 
 import LoadingSpinner from '../components/loading_spinner';
@@ -77,7 +80,7 @@ class SampleDetails extends Component {
             <Panel.Collapse>
               <Panel.Body>
                 <h4>Header</h4>
-                <Table condensed>
+                <Table condensed className="sample-detail-table">
                   <tbody>
                   <tr>
                     <th>Target Machine</th>
@@ -132,6 +135,7 @@ class SampleDetails extends Component {
     return null;
   }
 
+
   renderPESection(section) {
     return (
       <tr key={section.VirtualAddress}>
@@ -163,7 +167,7 @@ class SampleDetails extends Component {
             </Panel.Heading>
             <Panel.Collapse>
               <Panel.Body>
-                <Table condensed>
+                <Table condensed className="sample-detail-table">
                   <tbody>
                   {data.map(this.renderExifToolLine)}
                   </tbody>
@@ -175,6 +179,182 @@ class SampleDetails extends Component {
       )
     }
     return null;
+  }
+
+  renderOLEInfos(sample) {
+    if (sample.analyzer_results.oletools) {
+      const {data} = sample.analyzer_results.oletools;
+      const {macros, metadata, rtf_objects, directory_entries} = data;
+
+      return (
+        <div className="sample-ole-infos">
+          <Panel id="ole-infos" defaultExpanded>
+            <Panel.Heading>
+              <Panel.Title toggle>OLE Infos</Panel.Title>
+            </Panel.Heading>
+            <Panel.Collapse>
+              <Panel.Body>
+                {
+                  macros && macros.macro_analysis !== undefined && macros.macro_analysis.length > 0 ?
+                    <div>
+                      <h4>Commonly Abused Properties</h4>
+                      <ul>
+                        {this.containsMacroCharacteristic(macros.macro_analysis, "Document_open") ?
+                          <li>Runs when document is opened</li> : null}
+                        {this.containsMacroCharacteristic(macros.macro_analysis, "Shell") ?
+                          <li>May run an executable file or a system command</li> : null}
+                        {(this.containsMacroCharacteristic(macros.macro_analysis, "Chr")
+                          || this.containsMacroCharacteristic(macros.macro_analysis, "Xor")
+                          || this.containsMacroCharacteristic(macros.macro_analysis, "Base64 Strings")
+                          || this.containsMacroCharacteristic(macros.macro_analysis, "Hex Strings")
+                        )
+                          ? <li>Seems to contain deobfuscation code</li> : null}
+                      </ul>
+                    </div> : null
+                }
+
+                {
+                  macros && macros.extracted_macros !== undefined && macros.extracted_macros.length > 0 ?
+                    <div>
+                      <h4>Macros and VBA Code streams</h4>
+                      {macros.extracted_macros.map(macro => (
+                        <MacroCodeStream key={macro.vba_filename} macro={macro}/>))}
+
+                    </div> : null
+                }
+
+                {
+                  metadata !== undefined && metadata.SummaryInformation !== undefined ?
+                    <div>
+                      <h4>Summary Info</h4>
+                      <Table condensed className="sample-detail-table">
+                        <tbody>
+                        <tr>
+                          <th>Application Name</th>
+                          <td>{metadata.SummaryInformation.creating_application}</td>
+                        </tr>
+                        <tr>
+                          <th>Character Count</th>
+                          <td>{metadata.SummaryInformation.num_chars}</td>
+                        </tr>
+                        <tr>
+                          <th>Code Page</th>
+                          <td>{metadata.SummaryInformation.codepage}</td>
+                        </tr>
+                        <tr>
+                          <th>Creation Datetime</th>
+                          <td>{metadata.SummaryInformation.create_time}</td>
+                        </tr>
+                        <tr>
+                          <th>Edit Time</th>
+                          <td>{metadata.SummaryInformation.total_edit_time}</td>
+                        </tr>
+                        <tr>
+                          <th>Last Saved</th>
+                          <td>{metadata.SummaryInformation.last_saved_time}</td>
+                        </tr>
+                        <tr>
+                          <th>Page Count</th>
+                          <td>{metadata.SummaryInformation.num_pages}</td>
+                        </tr>
+                        <tr>
+                          <th>Revision Number</th>
+                          <td>{metadata.SummaryInformation.revision_number}</td>
+                        </tr>
+                        <tr>
+                          <th>Security</th>
+                          <td>{metadata.SummaryInformation.security}</td>
+                        </tr>
+                        <tr>
+                          <th>Template</th>
+                          <td>{metadata.SummaryInformation.template}</td>
+                        </tr>
+                        <tr>
+                          <th>Word Count</th>
+                          <td>{metadata.SummaryInformation.num_words}</td>
+                        </tr>
+                        </tbody>
+                      </Table>
+
+
+                      <h4>Document Summary Info</h4>
+                      <Table condensed className="sample-detail-table">
+                        <tbody>
+                        <tr>
+                          <th>Characters With Spaces</th>
+                          <td>{metadata.DocumentSummaryInformation.chars_with_spaces}</td>
+                        </tr>
+                        <tr>
+                          <th>Code Page</th>
+                          <td>{metadata.DocumentSummaryInformation.codepage_doc}</td>
+                        </tr>
+                        <tr>
+                          <th>Hyperlinks Changed</th>
+                          <td>{metadata.DocumentSummaryInformation.hlinks_changed}</td>
+                        </tr>
+                        <tr>
+                          <th>Line Count</th>
+                          <td>{metadata.DocumentSummaryInformation.lines}</td>
+                        </tr>
+                        <tr>
+                          <th>Links Dirty</th>
+                          <td>{metadata.DocumentSummaryInformation.links_dirty}</td>
+                        </tr>
+                        <tr>
+                          <th>Paragraph Count</th>
+                          <td>{metadata.DocumentSummaryInformation.paragraphs}</td>
+                        </tr>
+                        <tr>
+                          <th>Scale</th>
+                          <td>{metadata.DocumentSummaryInformation.scale_crop}</td>
+                        </tr>
+                        <tr>
+                          <th>Shared Document</th>
+                          <td>{metadata.DocumentSummaryInformation.shared_doc}</td>
+                        </tr>
+                        <tr>
+                          <th>Version</th>
+                          <td>{metadata.DocumentSummaryInformation.None}</td>
+                        </tr>
+                        </tbody>
+                      </Table>
+
+                    </div> : null
+                }
+
+                {
+                  directory_entries !== undefined && directory_entries.length > 0 ?
+                    <div>
+                      <h4>OLE Streams</h4>
+                      {directory_entries.map(data => <OleDirectoryEntry data={data}/>)}
+                    </div> : null
+                }
+
+                {
+                  rtf_objects && rtf_objects.length > 0 ?
+                    <div>
+                      <h4>RTF Objects</h4>
+                      {rtf_objects.map(data => <RtfObject data={data}/>)}
+                    </div> : null
+                }
+
+              </Panel.Body>
+            </Panel.Collapse>
+          </Panel>
+        </div>
+      )
+    }
+    return null;
+  }
+
+
+  containsMacroCharacteristic(macro_analysis, characteristic) {
+    for (const ma of macro_analysis) {
+      if (ma.keyword === characteristic)
+        return true;
+    }
+    return false;
+
   }
 
   renderExifToolLine(exif_info) {
@@ -297,7 +477,7 @@ class SampleDetails extends Component {
             </Panel.Heading>
             <Panel.Collapse>
               <Panel.Body>
-                <Table condensed>
+                <Table condensed className="sample-detail-table">
                   <tbody>
                   <tr>
                     <th>MD5</th>
@@ -356,6 +536,7 @@ class SampleDetails extends Component {
           </Panel>
         </div>
         {this.renderPEInfos(sample)}
+        {this.renderOLEInfos(sample)}
         {this.renderExifToolInfos(sample)}
 
       </div>
