@@ -39,6 +39,8 @@ services:
       ADMIN_USER: malquarium
       ADMIN_PASSWORD: changeme
 
+      VT_API_KEY: "your-VT-API-key"
+
     depends_on:
       - db
 
