@@ -35,7 +35,7 @@ def main():
                 })
             else:
                 result.append({
-                    "key": key,
+                    "key": key.split(":")[1] if ":" in key else key,
                     "value": json_data[key]
                 })
 
