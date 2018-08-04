@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.contrib.postgres.fields import JSONField
+from django.contrib.postgres.fields import JSONField, ArrayField
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -64,6 +64,8 @@ class Analyzer(models.Model):
     identifier = models.TextField(unique=True)
     name = models.TextField(unique=True)
     docker_image_name = models.TextField(unique=True)
+    mime_whitelist = ArrayField(models.TextField(), null=True, blank=True)
+    mime_blacklist = ArrayField(models.TextField(), null=True, blank=True)
     enabled = models.BooleanField(default=False)
 
     def __str__(self):

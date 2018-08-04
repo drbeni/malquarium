@@ -102,18 +102,36 @@ def create(sample_binary, user, private, original_filename, log=True):
             private=private,
         )
 
+        sample_mime = sample_store.calculate_mime(file_info.sha2)
         for analyzer in Analyzer.objects.filter(enabled=True):
-            analyzer_result_data = run_analyzer(analyzer, sample_store.get_outer_sample_path(file_info.sha2))
-            if analyzer_result_data:
-                AnalyzerResult.objects.create(
-                    analyzer=analyzer,
-                    sample=sample,
-                    result_data=analyzer_result_data
-                )
+            mime_matched = True
 
-                if 'tags' in analyzer_result_data:
-                    for t in analyzer_result_data['tags']:
-                        add_tag(sample, t, user, log)
+            if analyzer.mime_whitelist:
+                mime_matched = False
+                for whitelisted_mime in analyzer.mime_whitelist:
+                    if whitelisted_mime in sample_mime:
+                        mime_matched = True
+                        break
+
+            if mime_matched and analyzer.mime_blacklist:
+                for blacklisted_mime in analyzer.mime_blacklist:
+                    if blacklisted_mime in sample_mime:
+                        mime_matched = False
+                        break
+
+            if mime_matched:
+                print("Running analyzer {} on sample {}".format(analyzer.name, file_info.sha2))
+                analyzer_result_data = run_analyzer(analyzer, sample_store.get_outer_sample_path(file_info.sha2))
+                if analyzer_result_data:
+                    AnalyzerResult.objects.create(
+                        analyzer=analyzer,
+                        sample=sample,
+                        result_data=analyzer_result_data
+                    )
+
+                    if 'tags' in analyzer_result_data:
+                        for t in analyzer_result_data['tags']:
+                            add_tag(sample, t, user, log)
 
         for t in yara_scanner.scan(sample_store.get_sample_path(file_info.sha2)):
             add_tag(sample, t, user, log)

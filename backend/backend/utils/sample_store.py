@@ -39,6 +39,13 @@ class SampleStore:
             print("Magic Exception: {}".format(e))
             return ""
 
+    def calculate_mime(self, sha2):
+        try:
+            return self.backend.calculate_mime(sha2)
+        except magic.MagicException as e:
+            print("Magic Exception: {}".format(e))
+            return ""
+
     def persist_file(self, sha2):
         return self.backend.persist_file(sha2)
 
@@ -73,6 +80,10 @@ class StorageBackend(metaclass=ABCMeta):
 
     def calculate_magic(self, sha2):
         return magic.from_file(self.get_sample_path(sha2))
+
+    def calculate_mime(self, sha2):
+        mime = magic.Magic(mime=True)
+        return mime.from_file(self.get_sample_path(sha2))
 
     def persist_file(self, sha2):
         return None

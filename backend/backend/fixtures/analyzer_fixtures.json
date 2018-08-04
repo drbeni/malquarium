@@ -6,6 +6,8 @@
       "identifier": "exiftool",
       "name": "ExifTool File Metadata",
       "docker_image_name": "malquarium/exiftool",
+      "mime_whitelist": null,
+      "mime_blacklist": null,
       "enabled": true
     }
   },
@@ -16,6 +18,8 @@
       "identifier": "trid",
       "name": "TRiD",
       "docker_image_name": "malquarium/trid",
+      "mime_whitelist": null,
+      "mime_blacklist": null,
       "enabled": true
     }
   },
@@ -26,6 +30,8 @@
       "identifier": "pefile",
       "name": "PE Information",
       "docker_image_name": "malquarium/pefile",
+      "mime_whitelist": "[]",
+      "mime_blacklist": "[\"text/\", \"application/vnd\", \"application/ms\"]",
       "enabled": true
     }
   },
@@ -36,6 +42,8 @@
       "identifier": "oletools",
       "name": "OLE Information",
       "docker_image_name": "malquarium/oletools",
+      "mime_whitelist": "[\"application/vnd\", \"text/rtf\", \"application/ms\"]",
+      "mime_blacklist": "[]",
       "enabled": true
     }
   }
