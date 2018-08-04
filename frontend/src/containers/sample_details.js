@@ -326,7 +326,7 @@ class SampleDetails extends Component {
                   directory_entries !== undefined && directory_entries.length > 0 ?
                     <div>
                       <h4>OLE Streams</h4>
-                      {directory_entries.map(data => <OleDirectoryEntry data={data}/>)}
+                      {directory_entries.map(data => <OleDirectoryEntry key={data.id} data={data}/>)}
                     </div> : null
                 }
 

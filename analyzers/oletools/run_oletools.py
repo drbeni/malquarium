@@ -2,7 +2,6 @@ import json
 import os
 import re
 
-import magic
 from oletools import oleobj
 from oletools.common.clsid import KNOWN_CLSIDS
 from oletools.olevba import FileOpenError
@@ -222,24 +221,7 @@ def get_macros():
            }, tags
 
 
-def file_is_relevant():
-    mime = magic.Magic(mime=True)
-    try:
-        mime_type = mime.from_file('/sample')
-
-        if 'text/rtf' in mime_type or 'application/vnd' in mime_type or 'application/ms' in mime_type:
-            return True
-        return False
-    except Exception as e:
-        print(e)
-        return False
-
-
 def main():
-    if not file_is_relevant():
-        print("{}")
-        return
-
     rtf_objects, tags = get_rtf_objects()
     macros, new_tags = get_macros()
     tags += new_tags

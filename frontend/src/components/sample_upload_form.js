@@ -121,7 +121,7 @@ export default class SampleUploadForm extends Component {
             : ''
           }
           <div style={{margin: '10px 0 20px'}}>
-            By uploading a sample, you accept allow {SITE_NAME} to share the sample.
+            By uploading a sample, you allow {SITE_NAME} to share the sample.
           </div>
 
           <Button type="submit" bsStyle="primary">Upload Sample</Button>

@@ -49,6 +49,12 @@ def fetch_sample_file(sample, sample_url, crawl_user):
         print("Failed to process {} because of {}".format(sample_url, e))
 
 
+def process_url(feed, sample_url, sample, crawl_user):
+    if not CrawledUrl.objects.filter(url=sample_url).exists():
+        CrawledUrl.objects.create(url=sample_url, feed=feed)
+        fetch_sample_file(sample, sample_url, crawl_user)
+
+
 def crawl_feed(feed):
     try:
         crawl_user = User.objects.get(username='drbeni')
@@ -71,12 +77,7 @@ def crawl_feed(feed):
                     continue
 
             sample_url = sample[int(feed.format['url_field'])]
-            crawled_url, created = CrawledUrl.objects.get_or_create(url=sample_url, feed=feed)
-
-            if not created:
-                continue
-
-            fetch_sample_file(sample, sample_url, crawl_user)
+            process_url(feed, sample_url, sample, crawl_user)
 
     elif feed.format['type'] == 'json':
         try:
@@ -92,12 +93,8 @@ def crawl_feed(feed):
                             "Invalid JSON feed configured for feed {}: 'api_param' is missing".format(feed.url))
 
                     sample_url = feed.format['api_url'] + sample[feed.format['api_param']]
-                    crawled_url, created = CrawledUrl.objects.get_or_create(url=sample_url, feed=feed)
+                    process_url(feed, sample_url, sample, crawl_user)
 
-                    if not created:
-                        continue
-
-                    fetch_sample_file(sample, sample_url, crawl_user)
         except JSONDecodeError as e:
             print("Error while decoding json: {}".format(e))
 
@@ -121,13 +118,7 @@ def crawl_feed(feed):
                 if not sample_url.startswith("http"):
                     sample_url = "http://" + sample_url
 
-                crawled_url, created = CrawledUrl.objects.get_or_create(url=sample_url, feed=feed)
-
-                if not created:
-                    continue
-
-                fetch_sample_file(sample, sample_url, crawl_user)
-
+                process_url(feed, sample_url, sample, crawl_user)
 
     else:
         raise Exception("Invalid feed type configured for feed {}".format(feed.url))

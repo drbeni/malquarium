@@ -45,7 +45,7 @@ urlpatterns = [
 
     # API URLs
     # TODO: remove copy pasted code somehow
-    path('api/', include_docs_urls(title='virus.exchange API', public=True, patterns=(
+    path('api/', include_docs_urls(title='malquarium API', public=True, patterns=(
         path('api/query/<str:search_string>/', SampleList.as_view(), name='sample-list'),
         path('api/samples/', SampleUpload.as_view(), name='sample-upload'),
         path('api/samples/<str:sha2>/', SampleDetail.as_view(), name='sample-detail'),
