@@ -109,7 +109,7 @@ export default class LoginForm extends Component {
           </FormGroup>
 
           <div>
-            Don't have an account? Write an e-mail to <a href={CONTACT_EMAIL}>{CONTACT_EMAIL}</a> explaining who you are
+            Don't have an account? Write an e-mail to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> explaining who you are
             and why you would like access.
           </div>
         </Form>
