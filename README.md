@@ -7,7 +7,7 @@ Malquarium is a web based malware repository tool built on modern web technologi
 - VirusTotal like UI
 - Isolated execution of binary analysis for security reasons
 
-See it in action at https://virus.exchange
+See it in action at https://malquarium.org
  
 ## Installation
 
