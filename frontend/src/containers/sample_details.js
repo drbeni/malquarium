@@ -431,6 +431,12 @@ class SampleDetails extends Component {
               <th>File name</th>
               <td>{sample.original_filename}</td>
             </tr>
+            {sample.url ?
+            <tr>
+              <th>URL</th>
+              <td>{sample.url.replace(".", "[.]")}</td>
+            </tr>
+            : null}
             <tr>
               <th>Submitted</th>
               <td>{createDate.toLocaleDateString()} {createDate.toLocaleTimeString()}</td>

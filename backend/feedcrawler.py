@@ -26,7 +26,7 @@ def fetch_sample_file(sample, sample_url, crawl_user):
 
         try:
             persisted_sample, file_info = sample_utils.create(sample_binary, crawl_user, False, original_name,
-                                                              False)
+                                                              False, url=sample_url)
             sample_utils.add_source(persisted_sample, feed.source.name, crawl_user, False)
 
             print("Added sample {}".format(file_info.sha2))

@@ -23,6 +23,7 @@ class Sample(models.Model):
     vt_checked = models.BooleanField(default=False, verbose_name='VT checked')
     tags = models.ManyToManyField('Tag')
     source = models.ForeignKey('Source', on_delete=models.SET_NULL, null=True, db_index=True)
+    url = models.TextField(null=True, blank=True, verbose_name='URL')
     uploader = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, db_index=True)
     create_date = models.DateTimeField()
     private = models.BooleanField(default=False)

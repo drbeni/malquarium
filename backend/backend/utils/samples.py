@@ -71,7 +71,7 @@ def add_source(sample, source_name, user, log=True):
         LogAction.add_log(user, 'add', source, sample)
 
 
-def create(sample_binary, user, private, original_filename, log=True):
+def create(sample_binary, user, private, original_filename, log=True, url=None):
     sample_store = SampleStore()
     file_info = sample_store.handle_uploaded_file(sample_binary)
 
@@ -100,6 +100,7 @@ def create(sample_binary, user, private, original_filename, log=True):
             magic=magic_string,
             create_date=time_utils.get_datetime_now(),
             private=private,
+            url=url,
         )
 
         sample_mime = sample_store.calculate_mime(file_info.sha2)
