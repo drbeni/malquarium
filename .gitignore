@@ -79,3 +79,6 @@ backend/migrations/
 
 # Yara rules
 *.yarb
+
+# Yara index files
+backend/tools/yara/*_index.yar

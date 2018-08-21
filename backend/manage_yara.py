@@ -29,7 +29,7 @@ def generate_index():
                 for yara_rule in os.listdir(dir_path):
                     yara_rule_path = os.path.join(dir_path, yara_rule)
                     if os.path.isfile(yara_rule_path):
-                        f.write('include "./{}"\n'.format(yara_rule_path))
+                        f.write('include ".{}"\n'.format(yara_rule_path.split(YARA_RULES_PATH)[1]))
 
 
 if __name__ == '__main__':
