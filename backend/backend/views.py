@@ -72,7 +72,7 @@ class SampleList(APIView):
             for word in search_string.split(" "):
                 query = query.filter(tags__name__startswith=word)
 
-            sample_results = query.prefetch_related('tags', 'source').distinct()[:100]
+            sample_results = query.prefetch_related('tags', 'source').distinct()[:500]
 
         page = self.paginate_queryset(sample_results)
         if page is not None:
