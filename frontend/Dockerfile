@@ -23,7 +23,7 @@ ADD src /app/src
 RUN npm run-script build
 
 
-FROM drbeni/malquarium-backend:latest as backend
+FROM malquarium/backend:latest as backend
 # This container collects the static files for DRF
 
 ENV VIRTUAL_ENV /app/env/malquarium
