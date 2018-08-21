@@ -15,6 +15,9 @@ def fetch_sample_file(sample, sample_url, crawl_user):
     try:
         r = requests.get(sample_url, timeout=(30, 30))
         sample_binary = io.BytesIO(r.content)
+        if r.status_code >= 400:
+            print("{} responded with HTTP status {}".format(sample_url, r.status_code))
+            return
 
         try:
             original_name = r.headers['Content-Disposition'].split('filename=')[1].strip('"')
