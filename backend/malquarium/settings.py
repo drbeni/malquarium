@@ -161,6 +161,7 @@ SIMPLE_JWT = {
 # Malquarium
 MAX_SAMPLE_SIZE = int(os.getenv('MAX_SAMPLE_SIZE', 20 * 1024 * 1024))  # 20MB
 SAMPLE_ZIP_PASSWORD = os.getenv('SAMPLE_ZIP_PASSWORD', 'infected')
+MIN_SSDEEP_MATCH = int(os.getenv('MIN_SSDEEP_MATCH', 25))
 
 # All yara rules which should be used on sample upload
 # See yara rule collection in tools/yara

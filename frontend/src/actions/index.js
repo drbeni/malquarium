@@ -20,12 +20,18 @@ export const RESET_ERROR_MESSAGE = 'RESET_ERROR_MESSAGE';
 
 export function searchSamples(search_string, page = 1) {
   anonymousRequest();
+  search_string = escape(encodeURIComponent(search_string));
+
+  console.log(search_string);
+
   const url = `${API_ROOT_URL}query/${search_string}/?page=${page}`;
+
+  console.log(url);
+
   const request = axios.get(url);
 
   return (dispatch) => {
     dispatch({type: SHOW_LOADING});
-
     request.then(data => {
       dispatch({type: HIDE_LOADING});
       dispatch({type: SEARCH_SAMPLES, payload: {...data, search_string: search_string}})

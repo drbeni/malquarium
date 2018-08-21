@@ -2,7 +2,9 @@ import os
 import pyminizip
 import re
 import tempfile
+from urllib.parse import unquote
 
+import ssdeep
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import Http404, StreamingHttpResponse
@@ -21,7 +23,7 @@ from backend.models import Sample, Tag, AccessStatistic, LogAction
 from backend.serializers import SimpleSampleSerializer, FullSampleSerializer, ProfileSerializer, TagSerializer
 from backend.utils import samples as sample_utils
 from backend.utils.sample_store import SampleStore, SampleNotFoundException
-from malquarium.settings import MAX_SAMPLE_SIZE, SAMPLE_ZIP_PASSWORD
+from malquarium.settings import MAX_SAMPLE_SIZE, SAMPLE_ZIP_PASSWORD, MIN_SSDEEP_MATCH
 
 
 class SampleList(APIView):
@@ -33,12 +35,14 @@ class SampleList(APIView):
         AccessStatistic.increment_search(request.user)
 
         sample_results = None
+        search_string = unquote(search_string)
         search_string = search_string.strip().lower()
 
         # search for hash matches first
         sha256_pattern = re.compile('^[a-f0-9]{64}$')
         sha1_pattern = re.compile('^[a-f0-9]{40}$')
         md5_pattern = re.compile('^[a-f0-9]{32}$')
+        ssdeep_pattern = re.compile('^\d+:[^:]+:[^:]+$')
 
         if request.user.id:
             query = Sample.objects.filter(Q(private=False) | Q(uploader=request.user))
@@ -51,6 +55,18 @@ class SampleList(APIView):
             sample_results = query.filter(sha1=search_string)
         elif md5_pattern.match(search_string):
             sample_results = query.filter(Q(md5=search_string) | Q(imphash=search_string))
+        elif ssdeep_pattern.match(search_string):
+            chunk_length = int(search_string.split(':')[0])
+            seven_grams = sample_utils.ssdeep_to_int_ngram(search_string)
+
+            verified_samples = []
+            for sample in query.filter(ssdeep_length__in=[chunk_length, chunk_length * 2, chunk_length / 2],
+                                       ssdeep_7grams__overlap=seven_grams):
+                match = ssdeep.compare(sample.ssdeep, search_string)
+                if match >= MIN_SSDEEP_MATCH:
+                    verified_samples.append(sample.id)
+
+            sample_results = query.filter(id__in=verified_samples)
 
         if sample_results is None:
             for word in search_string.split(" "):

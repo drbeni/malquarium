@@ -47,7 +47,7 @@ class FullSampleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Sample
-        exclude = ('id',)
+        exclude = ('id', 'ssdeep_length', 'ssdeep_7grams')
 
 
 class SimpleSampleSerializer(serializers.ModelSerializer):
@@ -72,7 +72,7 @@ class SimpleSampleSerializer(serializers.ModelSerializer):
 class ServicePlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = ServicePlan
-        exclude = ('id',)
+        exclude = ('id', 'ssdeep_length', 'ssdeep_7grams')
 
 
 class ProfileSerializer(serializers.ModelSerializer):
