@@ -1,3 +1,7 @@
+import base64
+
+import ngram
+
 from backend.apps import yara_scanner
 from backend.models import Sample, Tag, Source, LogAction, Analyzer, AnalyzerResult
 from backend.utils import time as time_utils
@@ -88,6 +92,8 @@ def create(sample_binary, user, private, original_filename, log=True, url=None):
                     'Samples with format {} are not wanted on virus.exchange'.format(magic_string))
 
         sample_size = sample_binary.size if hasattr(sample_binary, 'size') else len(sample_binary.getvalue())
+        ssdeep_length = file_info.ssdeep.split(":")[0]
+        ssdeep_7grams = ssdeep_to_int_ngram(file_info.ssdeep)
 
         sample = Sample.objects.create(
             sha2=file_info.sha2,
@@ -96,6 +102,8 @@ def create(sample_binary, user, private, original_filename, log=True, url=None):
             original_filename=original_filename if original_filename else file_info.sha2,
             size=sample_size,
             ssdeep=file_info.ssdeep,
+            ssdeep_length=ssdeep_length,
+            ssdeep_7grams=ssdeep_7grams,
             uploader=user,
             magic=magic_string,
             create_date=time_utils.get_datetime_now(),
@@ -140,6 +148,24 @@ def create(sample_binary, user, private, original_filename, log=True, url=None):
         sample.save()
 
     return sample, file_info
+
+
+def ssdeep_to_int_ngram(ssdeep_hash):
+    G = ngram.NGram(N=7, pad_len=0)
+    ssdeep_7grams = []
+
+    ssdeep_parts = ssdeep_hash.split(":")
+
+    for seven_gram in G.split(ssdeep_parts[1]):
+        ssdeep_7grams.append(seven_gram_to_int(seven_gram))
+    for seven_gram in G.split(ssdeep_parts[2]):
+        ssdeep_7grams.append(seven_gram_to_int(seven_gram))
+
+    return ssdeep_7grams
+
+
+def seven_gram_to_int(seven_gram):
+    return int.from_bytes(base64.b64decode(seven_gram + "="), byteorder='little', signed=True)
 
 
 class UnwantedSampleFormatException(Exception):

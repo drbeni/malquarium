@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField, ArrayField
+from django.contrib.postgres.indexes import GinIndex
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -12,6 +13,8 @@ class Sample(models.Model):
     sha2 = models.TextField(db_index=True, verbose_name=' sha2')
     md5 = models.TextField(db_index=True, verbose_name=' md5')
     ssdeep = models.TextField(verbose_name=' ssdeep')
+    ssdeep_length = models.IntegerField(default=0)
+    ssdeep_7grams = ArrayField(models.BigIntegerField(), null=True)
     original_filename = models.TextField()
     size = models.IntegerField()
     magic = models.TextField()
@@ -59,6 +62,7 @@ class Sample(models.Model):
 
     class Meta:
         db_table = 'sample'
+        indexes = [GinIndex(fields=['ssdeep_7grams'])]
 
 
 class Analyzer(models.Model):

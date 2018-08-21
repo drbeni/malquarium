@@ -26,6 +26,7 @@ RUN $VIRTUAL_ENV/bin/pip3 install \
         docker \
         feedparser \
         gunicorn \
+        ngram \
         psycopg2-binary \
         pyminizip \
         python-magic \
