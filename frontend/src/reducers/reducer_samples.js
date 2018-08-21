@@ -3,7 +3,8 @@ import {FETCH_SAMPLE, LATEST_SAMPLES, SEARCH_SAMPLES} from "../actions";
 export const searchSamples = (state = {}, action) => {
   switch (action.type) {
     case SEARCH_SAMPLES:
-      return {...action.payload.data, search_string: action.payload.search_string};
+      const search_string = decodeURIComponent(decodeURIComponent(action.payload.search_string));
+      return {...action.payload.data, search_string: search_string};
     default:
       return state;
   }
