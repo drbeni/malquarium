@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import Navigation from './navigation';
 import GlobalError from '../containers/global_errors'
 import SearchBar from '../containers/search_bar';
-import SampleList from '../containers/sample_list';
+import SearchResultList from '../containers/search_result_list';
 import {SITE_NAME} from "../constants";
 
 export default class SampleListView extends Component {
@@ -17,7 +17,7 @@ export default class SampleListView extends Component {
         <Navigation history={this.props.history}/>
         <GlobalError/>
         <SearchBar history={this.props.history}/>
-        <SampleList/>
+        <SearchResultList/>
       </div>
     );
   }

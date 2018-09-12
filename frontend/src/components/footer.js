@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Nav, Navbar, NavItem} from 'react-bootstrap';
 
-import {SITE_NAME, CONTACT_EMAIL} from "../constants";
+import {CONTACT_EMAIL} from "../constants";
 
 export default class Footer extends Component {
 
@@ -15,7 +15,8 @@ export default class Footer extends Component {
           </Nav>
           <Navbar.Text>© 2018 drbeni</Navbar.Text>
           <Navbar.Text pullRight>
-            Project on <a href="https://github.com/drbeni/malquarium" target="_blank" rel="noopener noreferrer">GitHub</a>
+            Project on <a href="https://github.com/drbeni/malquarium" target="_blank"
+                          rel="noopener noreferrer">GitHub</a>
           </Navbar.Text>
         </Navbar>
       </div>

@@ -1,21 +1,19 @@
 import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {Label, Table} from 'react-bootstrap';
 import Pagination from "react-js-pagination";
 import {Redirect} from 'react-router'
 
+import SampleList from '../components/sample_list';
 import NothingFound from '../components/nothing_found';
 import LoadingSpinner from '../components/loading_spinner';
 
 import {searchSamples} from '../actions';
 
-class SampleList extends Component {
+class SearchResultList extends Component {
   constructor(props) {
     super(props);
 
-    this.renderSample = this.renderSample.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
 
     this.state = {
@@ -23,32 +21,6 @@ class SampleList extends Component {
     }
   }
 
-  renderTags(tag) {
-    return (
-      <Label bsStyle="default" bsClass="label block-label" key={tag.name}>
-        {tag.name}
-      </Label>
-    )
-  }
-
-  renderSample(sample) {
-    return (
-      <tr key={sample.sha2}>
-        <td>
-          <Link to={`/samples/${sample.sha2}`}>{sample.sha2}</Link>
-        </td>
-        <td>
-          {sample.tags.map(this.renderTags)}
-        </td>
-        <td>
-          {sample.source}
-        </td>
-        <td>
-          {sample.vt_result}
-        </td>
-      </tr>
-    );
-  }
 
   handlePageChange(pageNumber) {
     this.props.searchSamples(this.props.samples.search_string, pageNumber);
@@ -90,19 +62,7 @@ class SampleList extends Component {
           : ''
         }
 
-        <Table responsive>
-          <thead>
-          <tr>
-            <th style={{width: '40%'}}>SHA-256</th>
-            <th style={{width: '40%'}}>Tags</th>
-            <th style={{width: '10%'}}>Source</th>
-            <th style={{width: '10%'}}>VT</th>
-          </tr>
-          </thead>
-          <tbody>
-          {samples.results.map(this.renderSample)}
-          </tbody>
-        </Table>
+        <SampleList samples={samples.results}/>
       </div>
     );
   }
@@ -120,4 +80,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({searchSamples}, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SampleList)
+export default connect(mapStateToProps, mapDispatchToProps)(SearchResultList)
