@@ -9,7 +9,7 @@ import requests
 from requests.exceptions import ConnectTimeout, ReadTimeout
 
 
-def fetch_sample_file(sample, sample_url, crawl_user):
+def fetch_sample_file(sample, sample_url, crawl_user, hide_sample_url=False):
     print("Trying to fetch {}".format(sample_url))
 
     try:
@@ -29,7 +29,7 @@ def fetch_sample_file(sample, sample_url, crawl_user):
 
         try:
             persisted_sample, file_info = sample_utils.create(sample_binary, crawl_user, False, original_name,
-                                                              False, url=sample_url)
+                                                              False, url=sample_url if not hide_sample_url else None)
             sample_utils.add_source(persisted_sample, feed.source.name, crawl_user, False)
 
             print("Added sample {}".format(file_info.sha2))
@@ -55,7 +55,7 @@ def fetch_sample_file(sample, sample_url, crawl_user):
 def process_url(feed, sample_url, sample, crawl_user):
     if not CrawledUrl.objects.filter(url=sample_url).exists():
         CrawledUrl.objects.create(url=sample_url, feed=feed)
-        fetch_sample_file(sample, sample_url, crawl_user)
+        fetch_sample_file(sample, sample_url, crawl_user, feed.hide_sample_url)
 
 
 def crawl_feed(feed):

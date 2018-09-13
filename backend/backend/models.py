@@ -133,6 +133,7 @@ class Source(models.Model):
 
 class Feed(models.Model):
     url = models.TextField()
+    hide_sample_url = models.BooleanField(default=False)
     format = JSONField()
     source = models.ForeignKey('Source', on_delete=models.PROTECT)
     disabled = models.BooleanField(default=False)
