@@ -18,7 +18,7 @@ class SampleList extends Component {
     )
   }
 
-  renderSample(sample) {
+  renderSample(sample, hasMatchScores) {
     const date = new Date(sample.create_date);
 
     return (
@@ -38,12 +38,25 @@ class SampleList extends Component {
         <td>
           {sample.vt_result}
         </td>
+        {hasMatchScores ?
+        <td>
+          {sample.match_score}%
+        </td>
+        :null }
       </tr>
     );
   }
 
   render() {
     const samples = this.props.samples;
+    let hasMatchScores = false;
+    
+    for (const sample of samples){
+      if (sample.match_score !== undefined){
+        hasMatchScores = true;
+        break;
+      }
+    }
 
     return (
       <div className="sample-list">
@@ -55,10 +68,14 @@ class SampleList extends Component {
             <th style={{width: '30%'}}>Tags</th>
             <th style={{width: '10%'}}>Source</th>
             <th style={{width: '10%'}}>VT</th>
+            {hasMatchScores ?
+              <th style={{width: '10%'}}>Match</th>
+              : null
+            }
           </tr>
           </thead>
           <tbody>
-          {samples.map(this.renderSample)}
+          {samples.map(s => this.renderSample(s, hasMatchScores))}
           </tbody>
         </Table>
       </div>

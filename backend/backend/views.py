@@ -30,6 +30,7 @@ class SampleList(APIView):
     queryset = Sample.objects.all()
     permission_classes = (AllowAny,)
     pagination_class = PageNumberPagination
+    match_scores = {}
 
     def get(self, request, search_string, format=None):
         AccessStatistic.increment_search(request.user)
@@ -65,6 +66,7 @@ class SampleList(APIView):
                 match = ssdeep.compare(sample.ssdeep, search_string)
                 if match >= MIN_SSDEEP_MATCH:
                     verified_samples.append(sample.id)
+                    self.match_scores[sample.sha2] = match
 
             sample_results = query.filter(id__in=verified_samples)
 
@@ -77,10 +79,20 @@ class SampleList(APIView):
         page = self.paginate_queryset(sample_results)
         if page is not None:
             serializer = SimpleSampleSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            serializer_data = self.enrich_samples_with_match_score(serializer.data)
+            return self.get_paginated_response(serializer_data)
         else:
             serializer = SimpleSampleSerializer(sample_results, many=True)
-            return Response(serializer.data)
+            serializer_data = self.enrich_samples_with_match_score(serializer.data)
+            return Response(serializer_data)
+
+    def enrich_samples_with_match_score(self, serializer_data):
+        for i in range(len(serializer_data)):
+            sample_id = serializer_data[i]['sha2']
+            if sample_id in self.match_scores:
+                serializer_data[i]['match_score'] = self.match_scores[sample_id]
+
+        return serializer_data
 
     @property
     def paginator(self):
