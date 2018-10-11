@@ -55,7 +55,7 @@ class SampleList(APIView):
         elif sha1_pattern.match(search_string):
             sample_results = query.filter(sha1=search_string)
         elif md5_pattern.match(search_string):
-            sample_results = query.filter(Q(md5=search_string) | Q(imphash=search_string))
+            sample_results = query.filter(md5=search_string)
         elif ssdeep_pattern.match(search_string):
             chunk_length = int(search_string.split(':')[0])
             seven_grams = sample_utils.ssdeep_to_int_ngram(search_string)

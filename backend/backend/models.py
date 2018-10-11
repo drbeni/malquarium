@@ -37,29 +37,6 @@ class Sample(models.Model):
     def get_identifier(self):
         return {'id': self.id, 'name': self.sha2}
 
-    @staticmethod
-    def get_similar_sample_to(imphash, size, pe_meta):
-        for similar_candidate in Sample.objects.filter(imphash=imphash, size=size):
-            found_similar = True
-            for i in range(len(similar_candidate.pe_meta['Sections'])):
-                try:
-                    new_section = pe_meta['Sections'][i]
-                    cand_section = similar_candidate.pe_meta['Sections'][i]
-
-                    if new_section['Name'] != cand_section['Name'] \
-                            or new_section['VirtualAddress'] != cand_section['VirtualAddress'] \
-                            or new_section['RawSize'] != cand_section['RawSize'] \
-                            or new_section['Entropy'] != cand_section['Entropy']:
-                        found_similar = False
-                        break
-
-                except IndexError:
-                    found_similar = False
-                    break
-
-            if found_similar:
-                return similar_candidate
-
     class Meta:
         db_table = 'sample'
         indexes = [GinIndex(fields=['ssdeep_7grams'])]
