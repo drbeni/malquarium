@@ -1,4 +1,4 @@
-FROM buildpack-deps:xenial
+FROM debian:9-slim
 
 # Install dependencies
 RUN apt-get update \
