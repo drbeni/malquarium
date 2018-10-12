@@ -4,6 +4,7 @@ FROM debian:9-slim
 RUN apt-get update \
     && apt-get install -y \
         libfuzzy-dev \
+        libltdl7 \
         python3-pip \
         python3-virtualenv \
         virtualenv \
