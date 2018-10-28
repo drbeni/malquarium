@@ -1,11 +1,5 @@
-FROM node:9 as base
+FROM node:10-slim as base
 # This intermediate container is needed to transpile and build the JS stuff
-
-# Install OS dependencies
-RUN apt-get update \
-    && apt-get install -y \
-        nginx \
-    && rm -r /var/lib/apt/lists/*
 
 # Add sources
 RUN mkdir /app
