@@ -111,7 +111,7 @@ export function getSampleStats() {
 export function getLatestSamples() {
   anonymousRequest();
 
-  const url = `${API_ROOT_URL}samples/latest/`;
+  const url = `${API_ROOT_URL}samples/feed/10/`;
   const request = axios.get(url);
 
   return (dispatch) => {
