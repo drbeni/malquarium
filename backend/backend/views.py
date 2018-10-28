@@ -1,6 +1,5 @@
 import os
 import pyminizip
-import re
 import tempfile
 from urllib.parse import unquote
 
@@ -22,7 +21,9 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from backend.models import Sample, Tag, AccessStatistic, LogAction
 from backend.serializers import SimpleSampleSerializer, FullSampleSerializer, ProfileSerializer, TagSerializer
 from backend.utils import samples as sample_utils
+from backend.utils import time
 from backend.utils.sample_store import SampleStore, SampleNotFoundException
+from malquarium import constants
 from malquarium.settings import MAX_SAMPLE_SIZE, SAMPLE_ZIP_PASSWORD, MIN_SSDEEP_MATCH
 
 
@@ -39,24 +40,18 @@ class SampleList(APIView):
         search_string = unquote(search_string)
         search_string = search_string.strip().lower()
 
-        # search for hash matches first
-        sha256_pattern = re.compile('^[a-f0-9]{64}$')
-        sha1_pattern = re.compile('^[a-f0-9]{40}$')
-        md5_pattern = re.compile('^[a-f0-9]{32}$')
-        ssdeep_pattern = re.compile('^\d+:[^:]+:[^:]+$')
-
         if request.user.id:
             query = Sample.objects.filter(Q(private=False) | Q(uploader=request.user))
         else:
             query = Sample.objects.filter(private=False)
 
-        if sha256_pattern.match(search_string):
+        if constants.SHA256_PATTERN.match(search_string):
             sample_results = query.filter(sha2=search_string)
-        elif sha1_pattern.match(search_string):
+        elif constants.SHA1_PATTERN.match(search_string):
             sample_results = query.filter(sha1=search_string)
-        elif md5_pattern.match(search_string):
+        elif constants.MD5_PATTERN.match(search_string):
             sample_results = query.filter(md5=search_string)
-        elif ssdeep_pattern.match(search_string):
+        elif constants.SSDEEP_PATTERN.match(search_string):
             chunk_length = int(search_string.split(':')[0])
             seven_grams = sample_utils.ssdeep_to_int_ngram(search_string)
 
@@ -122,9 +117,57 @@ class SampleList(APIView):
         return self.paginator.get_paginated_response(data)
 
 
-class LatestSamplesList(ListAPIView):
-    queryset = Sample.objects.filter(private=False).prefetch_related('tags', 'source').order_by('-create_date')[:10]
+class SampleFeed(ListAPIView):
+    queryset = Sample.objects.filter(private=False)  # .prefetch_related('tags', 'source').order_by('-create_date')
     serializer_class = SimpleSampleSerializer
+
+    def get(self, request, *args, **kwargs):
+
+        sample_filter = kwargs['filter']
+        samples = []
+
+        try:
+            sample_num = int(sample_filter)
+            if 0 < sample_num < 1001:
+                samples = self.queryset.prefetch_related('tags', 'source').order_by('-create_date')[:sample_num]
+
+        except ValueError:
+            pass
+
+        if not samples:
+            last_sample = None
+
+            if constants.SHA256_PATTERN.match(sample_filter):
+                last_sample = Sample.objects.filter(private=False).filter(sha2=sample_filter).first()
+            elif constants.SHA1_PATTERN.match(sample_filter):
+                last_sample = Sample.objects.filter(private=False).filter(sha1=sample_filter).first()
+            elif constants.MD5_PATTERN.match(sample_filter):
+                last_sample = Sample.objects.filter(private=False).filter(md5=sample_filter).first()
+            if last_sample:
+                sample_candidates = self.queryset.filter(create_date__gte=last_sample.create_date) \
+                    .prefetch_related('tags', 'source').order_by('create_date')
+
+                found_last_sample = False
+                for sample_candidate in sample_candidates:
+                    if found_last_sample:
+                        samples.append(sample_candidate)
+
+                    if sample_candidate.sha2 == sample_filter \
+                            or sample_candidate.sha1 == sample_filter \
+                            or sample_candidate.md5 == sample_filter:
+                        found_last_sample = True
+
+        if not samples:
+            try:
+                sample_timestamp = float(sample_filter)
+                create_date = time.timestamp_to_datetime(sample_timestamp)
+                samples = self.queryset.filter(create_date__gte=create_date).prefetch_related('tags', 'source') \
+                              .order_by('-create_date')[:1000]
+            except ValueError:
+                return Response({'details': 'Invalid argument {}'.format(sample_filter)},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(SimpleSampleSerializer(samples, many=True).data)
 
 
 class SampleDetail(APIView):
