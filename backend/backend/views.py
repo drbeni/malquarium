@@ -118,10 +118,13 @@ class SampleList(APIView):
 
 
 class SampleFeed(ListAPIView):
-    queryset = Sample.objects.filter(private=False)  # .prefetch_related('tags', 'source').order_by('-create_date')
+    queryset = Sample.objects.filter(private=False)
     serializer_class = SimpleSampleSerializer
 
     def get(self, request, *args, **kwargs):
+        """
+        Get the latest samples by number, timestamp or hash
+        """
 
         sample_filter = kwargs['filter']
         samples = []
