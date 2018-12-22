@@ -66,13 +66,13 @@ class SimpleSampleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Sample
-        fields = ('sha2', 'tags', 'source', 'create_date', 'vt_result')
+        fields = ('sha2', 'sha1', 'md5', 'tags', 'source', 'create_date', 'vt_result')
 
 
 class ServicePlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = ServicePlan
-        exclude = ('id', )
+        exclude = ('id',)
 
 
 class ProfileSerializer(serializers.ModelSerializer):

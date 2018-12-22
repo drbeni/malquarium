@@ -28,7 +28,7 @@ urlpatterns = [
     path('api/query/<str:search_string>/', SampleList.as_view(), name='sample-list'),
     path('api/samples/', SampleUpload.as_view(), name='sample-upload'),
     path('api/samples/stats/', SampleStats.as_view(), name='sample-stats'),
-    path('api/samples/latest/', LatestSamplesList.as_view(), name='latest-sample-list'),
+    path('api/samples/feed/<str:filter>/', SampleFeed.as_view(), name='sample-feed'),
     path('api/samples/<str:sha2>/', SampleDetail.as_view(), name='sample-detail'),
     path('api/samples/download/<str:sha2>/', SampleDownload.as_view(), name='sample-download'),
 
@@ -49,6 +49,7 @@ urlpatterns = [
         path('api/query/<str:search_string>/', SampleList.as_view(), name='sample-list'),
         path('api/samples/', SampleUpload.as_view(), name='sample-upload'),
         path('api/samples/<str:sha2>/', SampleDetail.as_view(), name='sample-detail'),
+        path('api/samples/feed/<str:filter>/', SampleFeed.as_view(), name='sample-feed'),
         path('api/samples/download/<str:sha2>/', SampleDownload.as_view(), name='sample-download'),
 
         path('api/tags/', TagList.as_view(), name='tag-list'),
