@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, re_path, include
 from rest_framework.documentation import include_docs_urls
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
@@ -28,7 +28,7 @@ urlpatterns = [
     path('api/query/<str:search_string>/', SampleList.as_view(), name='sample-list'),
     path('api/samples/', SampleUpload.as_view(), name='sample-upload'),
     path('api/samples/stats/', SampleStats.as_view(), name='sample-stats'),
-    path('api/samples/feed/<str:filter>/', SampleFeed.as_view(), name='sample-feed'),
+    re_path('^api/samples/feed/(?P<filter>[^/]+)/(?P<tags>.*)$', SampleFeed.as_view(), name='sample-feed'),
     path('api/samples/<str:sha2>/', SampleDetail.as_view(), name='sample-detail'),
     path('api/samples/download/<str:sha2>/', SampleDownload.as_view(), name='sample-download'),
 
@@ -49,7 +49,7 @@ urlpatterns = [
         path('api/query/<str:search_string>/', SampleList.as_view(), name='sample-list'),
         path('api/samples/', SampleUpload.as_view(), name='sample-upload'),
         path('api/samples/<str:sha2>/', SampleDetail.as_view(), name='sample-detail'),
-        path('api/samples/feed/<str:filter>/', SampleFeed.as_view(), name='sample-feed'),
+        re_path('^api/samples/feed/(?P<filter>[^/]+)/(?P<tags>.*)$', SampleFeed.as_view(), name='sample-feed'),
         path('api/samples/download/<str:sha2>/', SampleDownload.as_view(), name='sample-download'),
 
         path('api/tags/', TagList.as_view(), name='tag-list'),

@@ -118,7 +118,7 @@ class SampleList(APIView):
 
 
 class SampleFeed(ListAPIView):
-    queryset = Sample.objects.filter(private=False)
+    queryset = Sample
     serializer_class = SimpleSampleSerializer
 
     def get(self, request, *args, **kwargs):
@@ -126,13 +126,24 @@ class SampleFeed(ListAPIView):
         Get the latest samples by number, timestamp or hash
         """
 
+        if request.user.id:
+            query = Sample.objects.filter(Q(private=False) | Q(uploader=request.user))
+        else:
+            query = Sample.objects.filter(private=False)
+
         sample_filter = kwargs['filter']
+        tag_filter = kwargs.get('tags')
+
+        if tag_filter is not None:
+            for word in tag_filter.split(","):
+                query = query.filter(tags__name__startswith=word)
+
         samples = []
 
         try:
             sample_num = int(sample_filter)
             if 0 < sample_num < 1001:
-                samples = self.queryset.prefetch_related('tags', 'source').order_by('-create_date')[:sample_num]
+                samples = query.prefetch_related('tags', 'source').order_by('-create_date')[:sample_num]
 
         except ValueError:
             pass
@@ -141,13 +152,13 @@ class SampleFeed(ListAPIView):
             last_sample = None
 
             if constants.SHA256_PATTERN.match(sample_filter):
-                last_sample = Sample.objects.filter(private=False).filter(sha2=sample_filter).first()
+                last_sample = query.filter(private=False).filter(sha2=sample_filter).first()
             elif constants.SHA1_PATTERN.match(sample_filter):
-                last_sample = Sample.objects.filter(private=False).filter(sha1=sample_filter).first()
+                last_sample = query.filter(private=False).filter(sha1=sample_filter).first()
             elif constants.MD5_PATTERN.match(sample_filter):
-                last_sample = Sample.objects.filter(private=False).filter(md5=sample_filter).first()
+                last_sample = query.filter(private=False).filter(md5=sample_filter).first()
             if last_sample:
-                sample_candidates = self.queryset.filter(create_date__gte=last_sample.create_date) \
+                sample_candidates = query.filter(create_date__gte=last_sample.create_date) \
                     .prefetch_related('tags', 'source').order_by('create_date')
 
                 found_last_sample = False
@@ -164,7 +175,7 @@ class SampleFeed(ListAPIView):
             try:
                 sample_timestamp = float(sample_filter)
                 create_date = time.timestamp_to_datetime(sample_timestamp)
-                samples = self.queryset.filter(create_date__gte=create_date).prefetch_related('tags', 'source') \
+                samples = query.filter(create_date__gte=create_date).prefetch_related('tags', 'source') \
                               .order_by('-create_date')[:1000]
             except ValueError:
                 return Response({'details': 'Invalid argument {}'.format(sample_filter)},
