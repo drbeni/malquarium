@@ -30,8 +30,7 @@ urlpatterns = [
     path('api/samples/stats/', SampleStats.as_view(), name='sample-stats'),
     re_path('^api/samples/feed/(?P<filter>[^/]+)/(?P<tags>.*)$', SampleFeed.as_view(), name='sample-feed'),
     path('api/samples/<str:sha2>/', SampleDetail.as_view(), name='sample-detail'),
-    path('api/samples/download/<str:sha2>/', SampleDownload.as_view(), name='sample-download'),
-
+    path('api/samples/download/<str:sample_format>/<str:sha2>/', SampleDownload.as_view(), name='sample-download'),
     path('api/tags/', TagList.as_view(), name='tag-list'),
     path('api/tags/add/<str:tag_name>/<str:sha2>/', add_tag, name='add-tag'),
     path('api/tags/remove/<str:tag_name>/<str:sha2>/', remove_tag, name='remove-tag'),

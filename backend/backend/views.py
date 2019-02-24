@@ -1,5 +1,6 @@
 import os
 import pyminizip
+import shutil
 import tempfile
 from urllib.parse import unquote
 
@@ -18,7 +19,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from backend.models import Sample, Tag, AccessStatistic, LogAction
+from backend.models import Sample, Tag, AccessStatistic, LogAction, AnalyzerResult
 from backend.serializers import SimpleSampleSerializer, FullSampleSerializer, ProfileSerializer, TagSerializer
 from backend.utils import samples as sample_utils
 from backend.utils import time
@@ -159,7 +160,7 @@ class SampleFeed(ListAPIView):
                 last_sample = query.filter(private=False).filter(md5=sample_filter).first()
             if last_sample:
                 sample_candidates = query.filter(create_date__gte=last_sample.create_date) \
-                    .prefetch_related('tags', 'source').order_by('create_date')
+                    .prefetch_related('tags', 'source').order_by('create_date')[:1500]
 
                 found_last_sample = False
                 for sample_candidate in sample_candidates:
@@ -197,33 +198,70 @@ class SampleDownload(APIView):
     authentication_classes = (JWTAuthentication, TokenAuthentication, SessionAuthentication)
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request, sha2):
+    def get(self, request, sample_format, sha2):
         if not request.user.profile.in_download_quota():
             return Response({'details': 'Download Quota exceeded'}, status=status.HTTP_403_FORBIDDEN)
 
         sample = get_sample(sha2, request.user)
-        sha2 = sample.sha2
         try:
-            sample_path = SampleStore().get_sample_path(sha2)
+            sample_path = SampleStore().get_sample_path(sample.sha2)
         except SampleNotFoundException:
             raise Http404
 
+        AccessStatistic.increment_download(request.user)
+
+        try:
+            trid_result = AnalyzerResult.objects.get(analyzer__identifier='trid', sample=sample)
+            ending = trid_result.result_data.get("ending", "")
+
+        except AnalyzerResult.DoesNotExist:
+            ending = ""
+
+        if sample_format == 'zip':
+            return self.get_sample_as_encrypted_zip(sample, sample_path, ending)
+
+        elif sample_format == 'raw':
+            return self.get_sample_as_raw_data(sample, sample_path, ending)
+
+        else:
+            return Response({'details': 'Invalid data format {}'.format(sample_format)},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    def get_sample_as_encrypted_zip(self, sample, sample_path, ending):
+        # Copy sample to /tmp because pyminizip cannot rename the file after compression
+        tmp_sample_path = os.path.join(tempfile.gettempdir(), sample.sha2 + ending)
+        shutil.copyfile(sample_path, tmp_sample_path)
+
         with tempfile.NamedTemporaryFile() as tmp_zip_file:
             try:
-                pyminizip.compress(sample_path, None, tmp_zip_file.name, SAMPLE_ZIP_PASSWORD, 0)
+                pyminizip.compress(tmp_sample_path, None, tmp_zip_file.name, SAMPLE_ZIP_PASSWORD, 0)
             except OSError:
                 raise Http404
-
-            AccessStatistic.increment_download(request.user)
 
             response = StreamingHttpResponse(
                 open(tmp_zip_file.name, 'rb'),
                 content_type='application/zip'
             )
-            response['Content-Disposition'] = "attachment; filename={}.zip".format(sha2)
+            response['Content-Disposition'] = "attachment; filename={}.zip".format(sample.sha2)
             response['Content-Length'] = os.stat(tmp_zip_file.name).st_size
 
+            os.remove(tmp_sample_path)
+
             return response
+
+    def get_sample_as_raw_data(self, sample, sample_path, ending):
+        try:
+            response = StreamingHttpResponse(
+                open(sample_path, 'rb'),
+                content_type='application/octet-stream'
+            )
+        except FileNotFoundError:
+            raise Http404
+
+        response['Content-Disposition'] = "attachment; filename={}{}".format(sample.sha2, ending)
+        response['Content-Length'] = os.stat(sample_path).st_size
+
+        return response
 
 
 class SampleUpload(APIView):

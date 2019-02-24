@@ -52,7 +52,7 @@ export function fetchSample(sha2) {
 
 export function downloadSample(sha2) {
   authenticatedRequest();
-  const url = `${API_ROOT_URL}samples/download/${sha2}/`;
+  const url = `${API_ROOT_URL}samples/download/zip/${sha2}/`;
   return axios.request({
     responseType: 'arraybuffer',
     url: url,
