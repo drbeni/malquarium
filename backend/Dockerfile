@@ -45,6 +45,7 @@ ADD feedcrawler.py /app/feedcrawler.py
 ADD virus_total.py /app/virus_total.py
 ADD tag_manager.py /app/tag_manager.py
 ADD cleanup.py /app/cleanup.py
+ADD update_trid_format.py /app/update_trid_format.py
 
 WORKDIR /app/
 
