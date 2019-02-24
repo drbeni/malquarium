@@ -504,7 +504,7 @@ class SampleDetails extends Component {
                   {sample.analyzer_results.trid ?
                     <tr>
                       <th>TRiD</th>
-                      <td>{sample.analyzer_results.trid.data.map(this.renderTrID)}</td>
+                      <td>{sample.analyzer_results.trid.data.data.map(this.renderTrID)}</td>
                     </tr>
                     : null}
                   <tr>
