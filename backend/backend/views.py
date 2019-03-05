@@ -8,6 +8,8 @@ import ssdeep
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import Http404, StreamingHttpResponse
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication
 from rest_framework.authtoken.models import Token
@@ -34,6 +36,13 @@ class SampleList(APIView):
     pagination_class = PageNumberPagination
     match_scores = {}
 
+    search_string_param = openapi.Parameter('search_string', openapi.IN_PATH,
+                                            description="""Hash (incl. ssdeep) or tag. If multiple tags are provided, 
+                                            samples matching all tags will be returned""",
+                                            type=openapi.TYPE_STRING)
+
+    @swagger_auto_schema(operation_description="Search for samples by hash or tag",
+                         manual_parameters=[search_string_param])
     def get(self, request, search_string, format=None):
         AccessStatistic.increment_search(request.user)
 
@@ -122,6 +131,18 @@ class SampleFeed(ListAPIView):
     queryset = Sample
     serializer_class = SimpleSampleSerializer
 
+    filter_desc = openapi.Parameter('filter', openapi.IN_PATH,
+                                    description="""Hash (incl. ssdeep), number of samples to fetch (max 1000)
+                                            or timestamp (epoch) of the oldest sample""",
+                                    type=openapi.TYPE_STRING)
+
+    tags_desc = openapi.Parameter('tags', openapi.IN_PATH,
+                                  description="""Optional comma separated list of tags to filter for""",
+                                  type=openapi.TYPE_STRING)
+
+    @swagger_auto_schema(operation_description="""Get a list of the latest samples by hash, tag or timestamp.
+                                                    Returns max. 1500 samples per request""",
+                         manual_parameters=[filter_desc, tags_desc])
     def get(self, request, *args, **kwargs):
         """
         Get the latest samples by number, timestamp or hash
@@ -160,7 +181,7 @@ class SampleFeed(ListAPIView):
                 last_sample = query.filter(private=False).filter(md5=sample_filter).first()
             if last_sample:
                 sample_candidates = query.filter(create_date__gte=last_sample.create_date) \
-                    .prefetch_related('tags', 'source').order_by('create_date').distinct()[:1500]
+                                        .prefetch_related('tags', 'source').order_by('create_date').distinct()[:1500]
 
                 found_last_sample = False
                 for sample_candidate in sample_candidates:
@@ -188,6 +209,7 @@ class SampleFeed(ListAPIView):
 class SampleDetail(APIView):
     queryset = Sample.objects.all()
 
+    @swagger_auto_schema(operation_description="Get all metadata of a sample")
     def get(self, request, sha2, format=None):
         sample = get_sample(sha2, request.user)
         return Response(FullSampleSerializer(sample).data)
@@ -198,6 +220,13 @@ class SampleDownload(APIView):
     authentication_classes = (JWTAuthentication, TokenAuthentication, SessionAuthentication)
     permission_classes = (IsAuthenticated,)
 
+    sample_format_desc = openapi.Parameter('sample_format', openapi.IN_PATH,
+                                           description="""<b>raw</b> to get the sample as raw binary<br />
+                                            <b>zip</b> to get the sample in an encrypted (infected) zip file""",
+                                           type=openapi.TYPE_STRING)
+
+    @swagger_auto_schema(operation_description="Search for samples by hash or tag",
+                         manual_parameters=[sample_format_desc])
     def get(self, request, sample_format, sha2):
         if not request.user.profile.in_download_quota():
             return Response({'details': 'Download Quota exceeded'}, status=status.HTTP_403_FORBIDDEN)
@@ -270,6 +299,9 @@ class SampleUpload(APIView):
     authentication_classes = (JWTAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)
 
+    @swagger_auto_schema(
+        operation_description="""Upload a new sample. You can provide tags and the source in the 
+        request body: {tags: [], source: 'source'}""")
     def post(self, request, format=None):
         if not request.user.profile.in_upload_quota():
             return Response({'details': 'Upload Quota exceeded'}, status=status.HTTP_403_FORBIDDEN)
@@ -301,6 +333,7 @@ class SampleUpload(APIView):
 
 
 class SampleStats(APIView):
+    swagger_schema = None
     queryset = Sample.objects.all()
 
     def get(self, request, format=None):
@@ -309,6 +342,7 @@ class SampleStats(APIView):
 
 
 class TagList(ListAPIView):
+    swagger_schema = None
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
@@ -317,6 +351,9 @@ class TagList(ListAPIView):
 @authentication_classes((JWTAuthentication, TokenAuthentication))
 @permission_classes((IsAuthenticated,))
 def add_tag(request, tag_name, sha2):
+    """
+    Adds a tag to a sample
+    """
     sample = get_sample(sha2, request.user)
 
     if sample.uploader != request.user:
@@ -332,6 +369,9 @@ def add_tag(request, tag_name, sha2):
 @authentication_classes((JWTAuthentication, TokenAuthentication))
 @permission_classes((IsAuthenticated,))
 def remove_tag(request, tag_name, sha2):
+    """
+    Removes a tag from a sample
+    """
     sample = get_sample(sha2, request.user)
 
     if sample.uploader != request.user:
@@ -358,6 +398,7 @@ def get_sample(sha2, user):
 
 
 class ProfileView(APIView):
+    swagger_schema = None
     queryset = User.objects.all()
 
     authentication_classes = (JWTAuthentication, TokenAuthentication, SessionAuthentication)
@@ -369,6 +410,7 @@ class ProfileView(APIView):
 
 
 class TokenReset(APIView):
+    swagger_schema = None
     authentication_classes = (JWTAuthentication,)
     permission_classes = (IsAuthenticated,)
 
