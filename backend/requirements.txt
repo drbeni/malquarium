@@ -1,9 +1,9 @@
-coreapi
 Django
 django-cors-headers
 djangorestframework
 djangorestframework-simplejwt
 docker
+drf-yasg
 feedparser
 ngram
 psycopg2-binary

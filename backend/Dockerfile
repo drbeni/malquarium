@@ -19,12 +19,12 @@ RUN virtualenv --python=/usr/bin/python3 malquarium
 ENV VIRTUAL_ENV /app/env/malquarium
 
 RUN $VIRTUAL_ENV/bin/pip3 install \
-        coreapi \
         Django \
         django-cors-headers \
         djangorestframework \
         djangorestframework-simplejwt \
         docker \
+        drf-yasg \
         feedparser \
         gunicorn \
         ngram \
