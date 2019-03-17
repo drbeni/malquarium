@@ -16,7 +16,6 @@ import AccountView from './components/account_view';
 import SampleListView from './components/sample_list_view';
 import DetailView from './components/detail_view';
 import UploadView from './components/upload_view';
-import AboutApiView from './components/about_api_view';
 import Footer from './components/footer'
 
 import './css/malquarium.css';
@@ -43,7 +42,6 @@ ReactDOM.render(
             <Route path="/samples/:sha2" component={DetailView}/>
             <Route exact path="/samples/" component={SampleListView}/>
             <Route exact path="/upload/" component={UploadView}/>
-            <Route exact path="/about-api" component={AboutApiView}/>
             <Route path="/" component={IndexView}/>
           </Switch>
         </div>

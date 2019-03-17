@@ -10,7 +10,7 @@ from backend.utils import time as time_utils
 
 class Sample(models.Model):
     sha1 = models.TextField(db_index=True, verbose_name=' sha1')
-    sha2 = models.TextField(db_index=True, verbose_name=' sha2')
+    sha2 = models.TextField(db_index=True, verbose_name=' sha2', help_text='SHA2 hash of the sample')
     md5 = models.TextField(db_index=True, verbose_name=' md5')
     ssdeep = models.TextField(verbose_name=' ssdeep')
     ssdeep_length = models.IntegerField(default=0)
@@ -24,7 +24,7 @@ class Sample(models.Model):
     vt_scan_date = models.DateTimeField(null=True, blank=True, verbose_name='VT scan date')
     vt_results = models.ManyToManyField('VirusTotalResult', blank=True, verbose_name='VT results')
     vt_checked = models.BooleanField(default=False, verbose_name='VT checked')
-    tags = models.ManyToManyField('Tag')
+    tags = models.ManyToManyField('Tag', help_text='Tags for this sample')
     source = models.ForeignKey('Source', on_delete=models.SET_NULL, null=True, db_index=True)
     url = models.TextField(null=True, blank=True, verbose_name='URL')
     uploader = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, db_index=True)

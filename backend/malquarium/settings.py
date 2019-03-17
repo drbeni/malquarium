@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
+    'drf_yasg',
     'backend',
 ]
 
@@ -156,6 +157,12 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
     'USER_ID_FIELD': 'username',
     'USER_ID_CLAIM': 'username',
+}
+
+SWAGGER_SETTINGS = {
+    'DEFAULT_MODEL_RENDERING': {
+        'example': True
+    }
 }
 
 # Malquarium

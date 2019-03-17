@@ -42,6 +42,7 @@ COPY --from=base /app/build/manifest.json /var/www/
 # Add static files for Django admin and Rest Framework
 COPY --from=backend /frontend/static_django/admin /var/www/static/admin
 COPY --from=backend /frontend/static_django/rest_framework /var/www/static/rest_framework
+COPY --from=backend /frontend/static_django/drf-yasg /var/www/static/drf-yasg
 
 ADD nginx.conf /etc/nginx/nginx.conf
 
