@@ -23,7 +23,6 @@ RUN $VIRTUAL_ENV/bin/pip3 install \
         django-cors-headers \
         djangorestframework \
         djangorestframework-simplejwt \
-        docker \
         drf-yasg \
         feedparser \
         gunicorn \
