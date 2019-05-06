@@ -314,7 +314,8 @@ class SampleUpload(APIView):
                   and 'ps' in request.user.profile.service_plan.get_compressed_capabilities()
 
         try:
-            sample, file_info = sample_utils.create(sample_binary, request.user, private, sample_binary.name, True)
+            url = request.POST.get('url')
+            sample, file_info = sample_utils.create(sample_binary, request.user, private, sample_binary.name, True, url)
             AccessStatistic.increment_upload(request.user)
 
             if 'tags' in request.POST:
