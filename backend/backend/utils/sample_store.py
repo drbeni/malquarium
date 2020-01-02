@@ -52,8 +52,8 @@ class SampleStore:
     def remove_file_from_cache(self, sha2):
         return self.backend.remove_file_from_cache(sha2)
 
-    def delete_sample_file(self, sample):
-        return self.backend.delete_sample_file(sample)
+    def delete_sample_file(self, sample, keep_meta=False):
+        return self.backend.delete_sample_file(sample, keep_meta)
 
 
 class StorageBackend(metaclass=ABCMeta):
@@ -91,7 +91,7 @@ class StorageBackend(metaclass=ABCMeta):
     def remove_file_from_cache(self, sha2):
         return True
 
-    def delete_sample_file(self, sample):
+    def delete_sample_file(self, sample, keep_meta):
         raise NotImplementedError
 
 
@@ -143,12 +143,13 @@ class LocalStorageBackend(StorageBackend):
     def get_outer_sample_path(self, sha2):
         return os.path.join(self.outer_dir, sha2[0], sha2[1], sha2[2], sha2)
 
-    def delete_sample_file(self, sample):
+    def delete_sample_file(self, sample, keep_meta=False):
         sample_path = self.get_sample_path(sample.sha2)
         if os.path.isfile(sample_path):
             os.remove(sample_path)
 
-        sample.delete()
+        if not keep_meta:
+            sample.delete()
 
 
 class FileInfo:

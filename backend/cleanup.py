@@ -1,11 +1,16 @@
 #!/usr/bin/env python
 import os
+from datetime import datetime, timedelta
+
+MIN_SAMPLE_SIZE = 1000
+MAX_SAMPLE_SIZE = 26214400
+MAX_AGE_IN_DAYS = 365
 
 
-def delete_sample(sample):
+def delete_sample(sample, keep_meta=False):
     print("Trying to remove Sample {}".format(sample.sha2))
     try:
-        sample_store.delete_sample_file(sample)
+        sample_store.delete_sample_file(sample, keep_meta)
     except Sample.DoesNotExist:
         print("Warning: no SampleFile for {}".format(sample.sha2))
 
@@ -19,8 +24,15 @@ def main():
     ):
         delete_sample(sample)
 
-    for sample in Sample.objects.filter(size__lt=1000):
+    for sample in Sample.objects.filter(size__lt=MIN_SAMPLE_SIZE):
         delete_sample(sample)
+
+    for sample in Sample.objects.filter(size__gt=MAX_SAMPLE_SIZE):
+        delete_sample(sample)
+
+    max_age = datetime.now() - timedelta(days=MAX_AGE_IN_DAYS)
+    for sample in Sample.objects.filter(create_date__lt=max_age):
+        delete_sample(sample, keep_meta=True)
 
 
 if __name__ == "__main__":

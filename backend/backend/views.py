@@ -1,9 +1,9 @@
 import os
-import pyminizip
 import shutil
 import tempfile
 from urllib.parse import unquote
 
+import pyminizip
 import ssdeep
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -165,7 +165,7 @@ class SampleFeed(ListAPIView):
         try:
             sample_num = int(sample_filter)
             if 0 < sample_num < 1001:
-                samples = query.prefetch_related('tags', 'source').order_by('-create_date').distinct()[:sample_num]
+                samples = query.prefetch_related('source').order_by('-create_date')[:sample_num]
 
         except ValueError:
             pass
@@ -181,7 +181,7 @@ class SampleFeed(ListAPIView):
                 last_sample = query.filter(private=False).filter(md5=sample_filter).first()
             if last_sample:
                 sample_candidates = query.filter(create_date__gte=last_sample.create_date) \
-                                        .prefetch_related('tags', 'source').order_by('create_date').distinct()[:1500]
+                                        .prefetch_related('source').order_by('create_date')[:1000]
 
                 found_last_sample = False
                 for sample_candidate in sample_candidates:
@@ -197,8 +197,8 @@ class SampleFeed(ListAPIView):
             try:
                 sample_timestamp = float(sample_filter)
                 create_date = time.timestamp_to_datetime(sample_timestamp)
-                samples = query.filter(create_date__gte=create_date).prefetch_related('tags', 'source') \
-                              .order_by('-create_date').distinct()[:1000]
+                samples = query.filter(create_date__gte=create_date).prefetch_related('source').order_by(
+                    '-create_date')[:1000]
             except ValueError:
                 return Response({'details': 'Invalid argument {}'.format(sample_filter)},
                                 status=status.HTTP_400_BAD_REQUEST)
