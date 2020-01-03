@@ -4,6 +4,7 @@ djangorestframework
 djangorestframework-simplejwt
 drf-yasg
 feedparser
+gunicorn
 ngram
 psycopg2-binary
 pyminizip
