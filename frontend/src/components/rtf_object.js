@@ -20,9 +20,9 @@ export default class RtfObject extends Component {
     const data = this.props.data;
     return (
       <div>
-        <a href="" onClick={this.toggleState}>
+        <button className="plusButton" onClick={this.toggleState}>
           {this.state.details_visible ? <Glyphicon glyph="minus"/> : <Glyphicon glyph="plus"/>}
-        </a>&nbsp;
+        </button>&nbsp;
         <span>{data.id}</span>
         {this.state.details_visible ?
           <Table condensed className="sample-sub-table">

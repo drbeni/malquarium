@@ -20,9 +20,10 @@ export default class MacroCodeStream extends Component {
     const macro = this.props.macro;
     return (
       <div>
-        <a href="" onClick={this.toggleState}>
+        <button className="plusButton" onClick={this.toggleState}>
           {this.state.details_visible ? <Glyphicon glyph="minus"/> : <Glyphicon glyph="plus"/>}
-        </a>&nbsp;
+        </button>
+        &nbsp;
         <span>{macro.vba_filename}</span>
         {this.state.details_visible ?
           <div className="macro-code-details">

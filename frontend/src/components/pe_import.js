@@ -25,9 +25,9 @@ export default class PEImport extends Component {
     const dll = this.props.dll;
     return (
       <div>
-        <a href="" onClick={this.toggleState}>
+        <button className="plusButton" onClick={this.toggleState}>
           {this.state.details_visible ? <Glyphicon glyph="minus"/> : <Glyphicon glyph="plus"/>}
-        </a>&nbsp;
+        </button>&nbsp;
         <span>{dll.Name}</span>
         {this.state.details_visible ?
           <div className="pe-import-details">

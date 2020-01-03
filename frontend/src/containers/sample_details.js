@@ -450,7 +450,7 @@ class SampleDetails extends Component {
             {sample.vt_total ?
               <tr>
                 <th>VT</th>
-                <td><a href={sample.vt_permalink} target="_blank">{sample.vt_positives} / {sample.vt_total}</a></td>
+                <td><a href={sample.vt_permalink} target="_blank" rel="noopener noreferrer">{sample.vt_positives} / {sample.vt_total}</a></td>
               </tr>
               : null}
             {this.props.isAuthenticated
