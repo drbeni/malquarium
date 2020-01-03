@@ -84,4 +84,4 @@ backend/migrations/
 backend/tools/yara/*_index.yar
 
 # .ENV
-.env
+backend/.env

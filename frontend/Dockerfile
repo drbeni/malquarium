@@ -6,6 +6,7 @@ RUN mkdir /app
 ADD public /app/public
 ADD package.json /app/
 ADD webpack.config.js /app/
+ADD .env /app/
 
 # Get NPM dependencies
 WORKDIR /app
@@ -14,7 +15,7 @@ RUN npm install
 ADD src /app/src
 
 # Build production scripts
-RUN npm run-script build
+RUN npm run build
 
 
 FROM malquarium/backend:latest as backend

@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
 import {Nav, Navbar, NavItem} from 'react-bootstrap';
 
-import {API_ROOT_URL, CONTACT_EMAIL} from "../constants";
-
 export default class Footer extends Component {
 
   render() {
@@ -10,8 +8,8 @@ export default class Footer extends Component {
       <div id="footer">
         <Navbar inverse>
           <Nav onSelect={key => this.props.history.push(key)}>
-            <NavItem href={API_ROOT_URL} target="_blank">API</NavItem>
-            <NavItem href={`mailto:${CONTACT_EMAIL}`}>Contact</NavItem>
+            <NavItem href={process.env.REACT_APP_API_ROOT_URL} target="_blank">API</NavItem>
+            <NavItem href={`mailto:${process.env.REACT_APP_CONTACT_EMAIL}`}>Contact</NavItem>
           </Nav>
           <Navbar.Text>© 2020 drbeni</Navbar.Text>
           <Navbar.Text pullRight>

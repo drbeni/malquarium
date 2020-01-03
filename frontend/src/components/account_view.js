@@ -4,11 +4,9 @@ import Navigation from './navigation';
 import GlobalError from '../containers/global_errors'
 import Profile from '../containers/profile'
 
-import {SITE_NAME} from "../constants";
-
 export default class AccountView extends Component {
   componentDidMount() {
-    document.title = `${SITE_NAME} - Profile`;
+    document.title = `${process.env.REACT_APP_SITE_NAME} - Profile`;
   }
 
   render() {
