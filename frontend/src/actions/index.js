@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {push} from 'react-router-redux'
+import {push} from 'connected-react-router'
 import {anonymousRequest, authenticatedRequest} from '../auth/jwt';
 import {API_ROOT_URL} from "../constants";
 

@@ -13,7 +13,7 @@ export default class Footer extends Component {
             <NavItem href={API_ROOT_URL} target="_blank">API</NavItem>
             <NavItem href={`mailto:${CONTACT_EMAIL}`}>Contact</NavItem>
           </Nav>
-          <Navbar.Text>© 2018 drbeni</Navbar.Text>
+          <Navbar.Text>© 2020 drbeni</Navbar.Text>
           <Navbar.Text pullRight>
             Project on <a href="https://github.com/drbeni/malquarium" target="_blank"
                           rel="noopener noreferrer">GitHub</a>

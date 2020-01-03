@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
-import createHistory from 'history/createBrowserHistory'
-import {ConnectedRouter, routerMiddleware} from 'react-router-redux'
+import {createBrowserHistory} from 'history';
+import {ConnectedRouter, routerMiddleware} from 'connected-react-router'
 import {applyMiddleware, createStore} from 'redux';
 import {Route, Switch} from 'react-router-dom';
 import promise from 'redux-promise';
@@ -21,11 +21,11 @@ import Footer from './components/footer'
 import './css/malquarium.css';
 import './css/autocomplete.css';
 
-const history = createHistory();
+const history = createBrowserHistory();
 
 
 const store = createStore(
-  reducers,
+  reducers(history),
   applyMiddleware(thunk, promise, routerMiddleware(history))
 );
 
