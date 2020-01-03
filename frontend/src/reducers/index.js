@@ -1,5 +1,5 @@
 import {combineReducers} from 'redux';
-import {LOCATION_CHANGE, routerReducer} from 'react-router-redux'
+import {connectRouter, LOCATION_CHANGE} from 'connected-react-router'
 import {reducer as formReducer} from 'redux-form';
 
 import auth, * as fromAuth from './reducer_auth';
@@ -44,7 +44,7 @@ const urlHistory = (state = [], action) => {
   }
 };
 
-const rootReducer = combineReducers({
+const rootReducer = history => combineReducers({
   auth: auth,
   profile: ProfileReducer,
   samples: searchSamples,
@@ -57,7 +57,7 @@ const rootReducer = combineReducers({
   formErrors: FormErrors,
   urlHistory: urlHistory,
   showLoadingSpinner: showLoadingSpinner,
-  router: routerReducer,
+  router: connectRouter(history),
 });
 
 export const isAuthenticated = state => fromAuth.isAuthenticated(state.auth);

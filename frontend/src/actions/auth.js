@@ -1,6 +1,5 @@
 import axios from 'axios';
 import {API_ERROR, HIDE_LOADING, SHOW_LOADING} from "./index";
-import {API_ROOT_URL} from "../constants";
 import {authenticatedRequest} from "../auth/jwt";
 
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
@@ -11,7 +10,7 @@ export const TOKEN_RECEIVED = 'TOKEN_RECEIVED';
 export const TOKEN_FAILURE = 'TOKEN_FAILURE';
 
 export const FETCH_PROFILE = 'FETCH_PROFILE';
-
+const API_ROOT_URL = process.env.REACT_APP_API_ROOT_URL;
 export const AUTH_URL = `${API_ROOT_URL}auth/token/`;
 
 
@@ -53,7 +52,7 @@ export function fetchProfile() {
   };
 }
 
-export function resetApiToken(){
+export function resetApiToken() {
   authenticatedRequest();
 
   const url = `${API_ROOT_URL}token/reset/`;

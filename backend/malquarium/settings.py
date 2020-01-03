@@ -14,6 +14,10 @@ import os
 import sys
 from datetime import timedelta
 
+import dotenv
+
+dotenv.load_dotenv()
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -172,7 +176,7 @@ MIN_SSDEEP_MATCH = int(os.getenv('MIN_SSDEEP_MATCH', 25))
 
 # All yara rules which should be used on sample upload
 # See yara rule collection in tools/yara
-YARA_COLLECTIONS = ('malwareconfig_index', )
+YARA_COLLECTIONS = ('malwareconfig_index',)
 
 STORAGE_BACKEND = {
     'local': {

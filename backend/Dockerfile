@@ -18,21 +18,8 @@ WORKDIR /app/env
 RUN virtualenv --python=/usr/bin/python3 malquarium
 ENV VIRTUAL_ENV /app/env/malquarium
 
-RUN $VIRTUAL_ENV/bin/pip3 install \
-        Django \
-        django-cors-headers \
-        djangorestframework \
-        djangorestframework-simplejwt \
-        drf-yasg \
-        feedparser \
-        gunicorn \
-        ngram \
-        psycopg2-binary \
-        pyminizip \
-        python-magic \
-        ssdeep \
-        yara-python \
-    --no-warn-script-location
+ADD requirements.txt /tmp/requirements.txt
+RUN $VIRTUAL_ENV/bin/pip3 install -r /tmp/requirements.txt --no-warn-script-location
 
 ADD backend /app/backend
 ADD malquarium /app/malquarium

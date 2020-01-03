@@ -198,3 +198,15 @@ fieldset[disabled] .btn-primary.focus {
     border-radius: 0;
     margin-bottom: 0;
 }
+
+.plusButton {
+    color: #7aa228;
+    text-decoration: none;
+    padding: 0;
+    border: none;
+    background: none;
+}
+
+.plusButton:hover {
+    color: #2f3e0f;
+}

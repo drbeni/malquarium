@@ -1,7 +1,6 @@
 import axios from 'axios';
-import {push} from 'react-router-redux'
+import {push} from 'connected-react-router'
 import {anonymousRequest, authenticatedRequest} from '../auth/jwt';
-import {API_ROOT_URL} from "../constants";
 
 export const FETCH_SAMPLE = 'FETCH_SAMPLE';
 export const SEARCH_SAMPLES = 'SEARCH_SAMPLES';
@@ -17,6 +16,8 @@ export const HIDE_LOADING = 'HIDE_LOADING';
 export const FORM_ERROR = 'FORM_ERROR';
 export const API_ERROR = 'API_ERROR';
 export const RESET_ERROR_MESSAGE = 'RESET_ERROR_MESSAGE';
+
+const API_ROOT_URL = process.env.REACT_APP_API_ROOT_URL;
 
 export function searchSamples(search_string, page = 1) {
   anonymousRequest();

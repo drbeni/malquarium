@@ -1,4 +1,4 @@
-# Malquarium - Yet another malware repository
+# Malquarium - A modern malware repository
 
 Malquarium is a web based malware repository tool built on modern web technologies with the follwoing goals in mind:  
 

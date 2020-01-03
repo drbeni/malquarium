@@ -2,8 +2,6 @@ import React, {Component} from 'react'
 import {Link} from 'react-router-dom';
 import {Alert, Button, Col, ControlLabel, Form, FormControl, FormGroup, HelpBlock, Jumbotron} from 'react-bootstrap';
 
-import {CONTACT_EMAIL, SITE_NAME} from "../constants";
-
 export default class LoginForm extends Component {
   constructor(props, context) {
     super(props, context);
@@ -18,7 +16,7 @@ export default class LoginForm extends Component {
   }
 
   componentDidMount() {
-    document.title = `${SITE_NAME} - Login`;
+    document.title = `${process.env.REACT_APP_SITE_NAME} - Login`;
   }
 
   handleChange(event) {
@@ -52,7 +50,7 @@ export default class LoginForm extends Component {
     return (
       <Jumbotron className="container">
         <Form onSubmit={this.onSubmit} horizontal>
-          <h1 className="logo logo-login">{SITE_NAME}</h1>
+          <h1 className="logo logo-login">{process.env.REACT_APP_SITE_NAME}</h1>
 
           <h2>Login</h2>
 
@@ -109,7 +107,9 @@ export default class LoginForm extends Component {
           </FormGroup>
 
           <div>
-            Don't have an account? Write an e-mail to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> explaining who you are
+            Don't have an account? Write an e-mail to <a
+            href={`mailto:${process.env.REACT_APP_CONTACT_EMAIL}`}>{process.env.REACT_APP_CONTACT_EMAIL}</a> explaining
+            who you are
             and why you would like access.
           </div>
         </Form>

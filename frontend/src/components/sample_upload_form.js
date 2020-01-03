@@ -2,8 +2,6 @@ import React, {Component} from 'react'
 import {Button, Checkbox, ControlLabel, Form, FormControl, FormGroup, HelpBlock} from 'react-bootstrap';
 import ReactTags from 'react-tag-autocomplete';
 
-import {SITE_NAME} from "../constants";
-
 export default class SampleUploadForm extends Component {
   constructor(props, context) {
     super(props, context);
@@ -21,7 +19,7 @@ export default class SampleUploadForm extends Component {
   };
 
   componentDidMount() {
-    document.title = `${SITE_NAME} - Upload`;
+    document.title = `${process.env.REACT_APP_SITE_NAME} - Upload`;
   }
 
   handleChange(event) {
@@ -121,7 +119,7 @@ export default class SampleUploadForm extends Component {
             : ''
           }
           <div style={{margin: '10px 0 20px'}}>
-            By uploading a sample, you allow {SITE_NAME} to share the sample.
+            By uploading a sample, you allow {process.env.REACT_APP_SITE_NAME} to share the sample.
           </div>
 
           <Button type="submit" bsStyle="primary">Upload Sample</Button>

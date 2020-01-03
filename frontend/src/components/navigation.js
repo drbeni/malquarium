@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 import {Glyphicon, Nav, Navbar, NavItem} from 'react-bootstrap';
-
-import {SITE_NAME} from "../constants";
 import AccountNavigation from '../containers/account_navigation';
 
 export default class Navigation extends Component {
@@ -18,7 +16,7 @@ export default class Navigation extends Component {
         <Navbar fixedTop>
           <Navbar.Header>
             <Navbar.Brand>
-              <Link to="/" className="logo">{SITE_NAME}</Link>
+              <Link to="/" className="logo">{process.env.REACT_APP_SITE_NAME}</Link>
             </Navbar.Brand>
             <Navbar.Toggle/>
           </Navbar.Header>

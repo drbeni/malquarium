@@ -4,9 +4,11 @@ djangorestframework
 djangorestframework-simplejwt
 drf-yasg
 feedparser
+gunicorn
 ngram
 psycopg2-binary
 pyminizip
+python-dotenv
 python-magic
 pytz
 requests
