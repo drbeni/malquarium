@@ -83,5 +83,5 @@ backend/migrations/
 # Yara index files
 backend/tools/yara/*_index.yar
 
-# NPM
-frontend/package-lock.json
+# .ENV
+.env
