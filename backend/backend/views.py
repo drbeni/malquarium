@@ -8,6 +8,11 @@ import ssdeep
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import Http404, StreamingHttpResponse
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes
+from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode
+from django.utils.http import urlsafe_base64_encode
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
@@ -23,11 +28,12 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from backend.models import Sample, Tag, AccessStatistic, LogAction, AnalyzerResult
 from backend.serializers import SimpleSampleSerializer, FullSampleSerializer, ProfileSerializer, TagSerializer
+from backend.tokens import account_activation_token
 from backend.utils import samples as sample_utils
 from backend.utils import time
 from backend.utils.sample_store import SampleStore, SampleNotFoundException
 from malquarium import constants
-from malquarium.settings import MAX_SAMPLE_SIZE, SAMPLE_ZIP_PASSWORD, MIN_SSDEEP_MATCH
+from malquarium.settings import MAX_SAMPLE_SIZE, SAMPLE_ZIP_PASSWORD, MIN_SSDEEP_MATCH, FRONTEND_URL
 
 
 class SampleList(APIView):
@@ -420,3 +426,63 @@ class TokenReset(APIView):
         Token.objects.create(user=request.user)
 
         return Response(ProfileSerializer(request.user).data)
+
+
+class SignUpView(APIView):
+    swagger_schema = None
+
+    def post(self, request, format=None):
+        email = request.data.get('email')
+        raw_password = request.data.get('password')
+
+        if not email or not raw_password or len(raw_password) < 10:
+            return Response({'details': 'Invalid signup data received'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not constants.EMAIL_PATTERN.match(email):
+            return Response({'details': 'Invalid email address format'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if User.objects.filter(username=email).exists():
+            return Response({'details': 'This email address is already taken'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.create_user(
+            username=email,
+            email=email,
+            password=raw_password,
+            is_active=False
+        )
+
+        subject = 'Activate Your Malquarium Account'
+        message = render_to_string('backend/account_activation_email.html', {
+            'user': user,
+            'frontend_url': FRONTEND_URL,
+            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            'token': account_activation_token.make_token(user),
+        })
+
+        try:
+            user.email_user(subject, message)
+        except:
+            user.delete()
+            return Response({'details': 'Failed to send verification email'},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(ProfileSerializer(request.user).data)
+
+
+class UserActivationView(APIView):
+    swagger_schema = None
+
+    def get(self, request, uidb64, token, format=None):
+        try:
+            uid = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user is not None and account_activation_token.check_token(user, token):
+            user.is_active = True
+            user.profile.email_confirmed = True
+            user.save()
+            return Response({'details': 'OK'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({'details': 'Failed to activate account'}, status=status.HTTP_400_BAD_REQUEST)

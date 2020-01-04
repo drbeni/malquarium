@@ -106,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
         'OPTIONS': {
-            'min_length': 8,
+            'min_length': 10,
         }
     },
     {
@@ -133,10 +133,6 @@ LOGGING = {
             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
             'propagate': True,
         },
-        # 'django.db.backends': {
-        #     'level': 'DEBUG',
-        #     'handlers': ['console'],
-        # }
     },
 }
 
@@ -168,6 +164,17 @@ SWAGGER_SETTINGS = {
         'example': True
     }
 }
+
+# Email related settings
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT'))
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+EMAIL_USE_TLS = True if os.getenv('EMAIL_USE_TLS') in ('1', 'True', 'true') else False
+EMAIL_USE_SSL = True if os.getenv('EMAIL_USE_SSL') in ('1', 'True', 'true') else False
+
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'https://malquarium.org')
 
 # Malquarium
 MAX_SAMPLE_SIZE = int(os.getenv('MAX_SAMPLE_SIZE', 20 * 1024 * 1024))  # 20MB
