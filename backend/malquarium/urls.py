@@ -57,7 +57,7 @@ urlpatterns = [
     path('api/auth/token/refresh/', MalquariumTokenRefreshView.as_view()),
     path('api/auth/profile/', ProfileView.as_view(), name='profile-view'),
 
-    path('api/signup/', SignUpView.as_view(), name='signup-view'),
-    re_path(r'^api/activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+    path('api/auth/register/', RegisterView.as_view(), name='signup-view'),
+    re_path(r'^api/auth/activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
             UserActivationView.as_view(), name='activate'),
 ]

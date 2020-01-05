@@ -428,26 +428,29 @@ class TokenReset(APIView):
         return Response(ProfileSerializer(request.user).data)
 
 
-class SignUpView(APIView):
+class RegisterView(APIView):
     swagger_schema = None
 
     def post(self, request, format=None):
         email = request.data.get('email')
-        raw_password = request.data.get('password')
+        password = request.data.get('password')
 
-        if not email or not raw_password or len(raw_password) < 10:
-            return Response({'details': 'Invalid signup data received'}, status=status.HTTP_400_BAD_REQUEST)
+        email_message = self.validate_email(email)
+        password_message = self.validate_password(password)
 
-        if not constants.EMAIL_PATTERN.match(email):
-            return Response({'details': 'Invalid email address format'}, status=status.HTTP_400_BAD_REQUEST)
+        if email_message or password_message:
+            response_data = {}
+            if email_message:
+                response_data['email'] = email_message
+            if password_message:
+                response_data['password'] = password_message
 
-        if User.objects.filter(username=email).exists():
-            return Response({'details': 'This email address is already taken'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
 
         user = User.objects.create_user(
             username=email,
             email=email,
-            password=raw_password,
+            password=password,
             is_active=False
         )
 
@@ -466,7 +469,30 @@ class SignUpView(APIView):
             return Response({'details': 'Failed to send verification email'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(ProfileSerializer(request.user).data)
+        return Response({'details': 'OK'}, status=status.HTTP_201_CREATED)
+
+    def validate_email(self, email):
+        message = None
+
+        if not email:
+            message = 'This field may not be blank'
+        elif not constants.EMAIL_PATTERN.match(email):
+            message = '{} is not a valid email address'.format(email)
+        else:
+            if User.objects.filter(username=email).exists():
+                message = 'This email address is already taken'
+
+        return message
+
+    def validate_password(self, password):
+        message = None
+
+        if not password:
+            message = 'This field may not be blank'
+        elif len(password) < 10:
+            message = 'Please enter at least 10 characters for the password'
+
+        return message
 
 
 class UserActivationView(APIView):
