@@ -15,7 +15,7 @@ class AccountNavigation extends Component {
         >
           <NavDropdown
             id="nav-dropdown"
-            title={<span><Glyphicon glyph="user"/> Account</span> }
+            title={<span><Glyphicon glyph="user"/> Account</span>}
           >
             <NavItem eventKey={'/profile'}>Profile</NavItem>
             <NavItem eventKey={'/logout'}>Logout</NavItem>
@@ -28,6 +28,7 @@ class AccountNavigation extends Component {
            activeKey={this.props.history.location.pathname}
            onSelect={key => this.props.history.push(key)}
       >
+        <NavItem eventKey={'/register'}>Register</NavItem>
         <NavItem eventKey={'/login'}>Login</NavItem>
       </Nav>
     )

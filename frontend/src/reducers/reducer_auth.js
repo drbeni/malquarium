@@ -42,6 +42,7 @@ export default (state = initialState, action) => {
       };
     case auth.LOGIN_FAILURE:
     case auth.TOKEN_FAILURE:
+    case auth.REGISTER_FAILURE:
       clearToken();
 
       return {

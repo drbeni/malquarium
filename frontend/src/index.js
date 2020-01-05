@@ -11,6 +11,8 @@ import thunk from 'redux-thunk';
 import reducers from './reducers';
 import Login from './containers/login';
 import Logout from './containers/logout';
+import Register from './containers/register';
+import AccountActivation from "./containers/account_activation";
 import IndexView from './components/index_view';
 import AccountView from './components/account_view';
 import SampleListView from './components/sample_list_view';
@@ -38,6 +40,9 @@ ReactDOM.render(
           <Switch>
             <Route exact path="/login/" component={Login}/>
             <Route exact path="/logout/" component={Logout}/>
+            <Route exact path="/register/" component={Register}/>
+            <Route exact path="/activate/" component={AccountActivation} />
+            <Route path="/activate/:uid/:token" component={AccountActivation} />
             <Route exact path="/profile/" component={AccountView}/>
             <Route path="/samples/:sha2" component={DetailView}/>
             <Route exact path="/samples/" component={SampleListView}/>
