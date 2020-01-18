@@ -13,7 +13,7 @@ See it in action at https://malquarium.org
 
 ### Requirements
 
-A Linux system. Tested on Ubuntu 16.04 and Ubuntu 18.04, but should work everywhere.
+A Linux system. Tested on Ubuntu 18.04, but should work everywhere.
 
 Malquarium requires Docker to run it's binary analyzer modules. If you decide to run the backend and frontend outside of Docker containers, the user which runs the backend needs to be in the docker group because the backend needs to launch containers on demand.
 
