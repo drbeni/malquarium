@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {Link} from 'react-router-dom';
 import {Alert, Button, Col, ControlLabel, Form, FormControl, FormGroup, HelpBlock, Jumbotron} from 'react-bootstrap';
 
-export default class LoginForm extends Component {
+export default class RegisterForm extends Component {
   constructor(props, context) {
     super(props, context);
 
@@ -10,13 +10,13 @@ export default class LoginForm extends Component {
     this.onSubmit = this.onSubmit.bind(this);
 
     this.state = {
-      username: '',
+      email: '',
       password: ''
     };
   }
 
   componentDidMount() {
-    document.title = `${process.env.REACT_APP_SITE_NAME} - Login`;
+    document.title = `${process.env.REACT_APP_SITE_NAME} - Register`;
   }
 
   handleChange(event) {
@@ -33,7 +33,7 @@ export default class LoginForm extends Component {
 
   onSubmit(event) {
     event.preventDefault();
-    this.props.onSubmit(this.state.username, this.state.password)
+    this.props.onSubmit(this.state.email, this.state.password)
   };
 
   getValidationState(field) {
@@ -52,11 +52,11 @@ export default class LoginForm extends Component {
         <Form onSubmit={this.onSubmit} horizontal>
           <h1 className="logo logo-login">{process.env.REACT_APP_SITE_NAME}</h1>
 
-          <h2>Login</h2>
+          <h2>Register for a new account</h2>
 
           <FormGroup
-            controlId="authUsername"
-            validationState={this.getValidationState('username')}
+            controlId="authEmail"
+            validationState={this.getValidationState('email')}
           >
             <Col componentClass={ControlLabel} sm={2}>
               Email
@@ -65,17 +65,17 @@ export default class LoginForm extends Component {
               <FormControl
                 type="text"
                 placeholder="Email"
-                value={this.state.username}
+                value={this.state.email}
                 onChange={this.handleChange}
-                name="username"
+                name="email"
               />
-              <HelpBlock>{errors.username}</HelpBlock>
+              <HelpBlock>{errors.email}</HelpBlock>
             </Col>
           </FormGroup>
 
           <FormGroup
             controlId="authPassword"
-            validationState={this.getValidationState('username')}
+            validationState={this.getValidationState('password')}
           >
             <Col componentClass={ControlLabel} sm={2}>
               Password
@@ -101,10 +101,11 @@ export default class LoginForm extends Component {
 
           <FormGroup>
             <Col smOffset={2} sm={10}>
-              <Button type="submit" bsStyle="primary">Sign in</Button>
+              <Button type="submit" bsStyle="primary">Register</Button>
               <Link role="button" className="btn btn-danger" to="/">Cancel</Link>
             </Col>
           </FormGroup>
+
         </Form>
       </Jumbotron>
     )

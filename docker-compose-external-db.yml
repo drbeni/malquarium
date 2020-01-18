@@ -27,6 +27,14 @@ services:
       DB_SERVER: db
       DB_PORT: 5432
 
+      EMAIL_HOST: smtp.gmail.com
+      EMAIL_PORT: 465
+      EMAIL_HOST_USER: someone@gmail.com
+      EMAIL_HOST_PASSWORD: someones-password
+      EMAIL_USE_TLS: 0
+      EMAIL_USE_SSL: 1
+      DEFAULT_FROM_EMAIL: someone@gmail.com
+
       CONSOLE_LOG_LEVEL: INFO
       DJANGO_LOG_LEVEL: INFO
 

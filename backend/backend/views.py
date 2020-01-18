@@ -8,6 +8,11 @@ import ssdeep
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import Http404, StreamingHttpResponse
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes
+from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode
+from django.utils.http import urlsafe_base64_encode
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
@@ -23,11 +28,12 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from backend.models import Sample, Tag, AccessStatistic, LogAction, AnalyzerResult
 from backend.serializers import SimpleSampleSerializer, FullSampleSerializer, ProfileSerializer, TagSerializer
+from backend.tokens import account_activation_token
 from backend.utils import samples as sample_utils
 from backend.utils import time
 from backend.utils.sample_store import SampleStore, SampleNotFoundException
 from malquarium import constants
-from malquarium.settings import MAX_SAMPLE_SIZE, SAMPLE_ZIP_PASSWORD, MIN_SSDEEP_MATCH
+from malquarium.settings import MAX_SAMPLE_SIZE, SAMPLE_ZIP_PASSWORD, MIN_SSDEEP_MATCH, FRONTEND_URL
 
 
 class SampleList(APIView):
@@ -420,3 +426,89 @@ class TokenReset(APIView):
         Token.objects.create(user=request.user)
 
         return Response(ProfileSerializer(request.user).data)
+
+
+class RegisterView(APIView):
+    swagger_schema = None
+
+    def post(self, request, format=None):
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        email_message = self.validate_email(email)
+        password_message = self.validate_password(password)
+
+        if email_message or password_message:
+            response_data = {}
+            if email_message:
+                response_data['email'] = email_message
+            if password_message:
+                response_data['password'] = password_message
+
+            return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.create_user(
+            username=email,
+            email=email,
+            password=password,
+            is_active=False
+        )
+
+        subject = 'Activate Your Malquarium Account'
+        message = render_to_string('backend/account_activation_email.html', {
+            'user': user,
+            'frontend_url': FRONTEND_URL,
+            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            'token': account_activation_token.make_token(user),
+        })
+
+        try:
+            user.email_user(subject, message)
+        except:
+            user.delete()
+            return Response({'details': 'Failed to send verification email'},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({'details': 'OK'}, status=status.HTTP_201_CREATED)
+
+    def validate_email(self, email):
+        message = None
+
+        if not email:
+            message = 'This field may not be blank'
+        elif not constants.EMAIL_PATTERN.match(email):
+            message = '{} is not a valid email address'.format(email)
+        else:
+            if User.objects.filter(username=email).exists():
+                message = 'This email address is already taken'
+
+        return message
+
+    def validate_password(self, password):
+        message = None
+
+        if not password:
+            message = 'This field may not be blank'
+        elif len(password) < 10:
+            message = 'Please enter at least 10 characters for the password'
+
+        return message
+
+
+class UserActivationView(APIView):
+    swagger_schema = None
+
+    def get(self, request, uidb64, token, format=None):
+        try:
+            uid = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user is not None and account_activation_token.check_token(user, token):
+            user.is_active = True
+            user.profile.email_confirmed = True
+            user.save()
+            return Response({'details': 'OK'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({'details': 'Failed to activate account'}, status=status.HTTP_400_BAD_REQUEST)

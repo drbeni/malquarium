@@ -1,0 +1,7 @@
+{% autoescape off %}
+Hi curious person with the email address {{ user.email }},
+
+Please click on the link below to confirm your registration on Malquarium:
+
+{{ frontend_url }}/activate/{{ uid }}/{{ token }}
+{% endautoescape %}
